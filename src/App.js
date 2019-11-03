@@ -5,17 +5,26 @@ import {
     Route,
     Link
 } from 'react-router-dom';
+
+import Calendar from './pages/Calendar';
+import Dashboard from './pages/Dashboard';
 import './App.css';
 
-import Button from 'react-bootstrap/Button';
-
 function App() {
-  return (
-    <div className="App">
-	<h1>All anthony does is peepee poopoo</h1>
-	<Button>This is a button</Button>
-    </div>
-  );
+    return (
+        <Router>
+            <div>
+                <Switch>
+                    <Route path='/calendar'>
+                        <Calendar />
+                    </Route>
+                    <Route path='/'>
+                        <Dashboard />
+                    </Route>
+                </Switch>
+            </div>
+        </Router>
+    );
 }
 
 export default App;
