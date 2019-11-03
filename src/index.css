@@ -18,8 +18,9 @@ code {
     text-align: center;
 }
 
-.in-out-button {
-    width: 100%;
+.btn-success, .btn-danger {
+    background-color: darkgray;
+    border-color: black;
 }
 
 .row {

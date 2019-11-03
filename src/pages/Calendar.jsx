@@ -19,14 +19,6 @@ class Calendar extends Component {
         });
     }
     
-    render() {
-        return (
-            <div>
-                Calendar
-            </div>
-        );
-    }
-
     /**
      * Create an OAuth2 client with the given credentials, and then execute the
      * given callback function.
@@ -102,6 +94,14 @@ class Calendar extends Component {
                 console.log('No upcoming events found.');
             }
         });
+    }
+    
+    render() {
+        return (
+            <div>
+                Calendar
+            </div>
+        );
     }
 }
 
