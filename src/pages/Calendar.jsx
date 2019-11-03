@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
+import fs from 'fs';
 
-const fs = require('fs');
 const readline = require('readline');
-const {google} = require('googleapis');
+const {google} = require('gapi-client');
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 
@@ -11,10 +11,11 @@ const TOKEN_PATH = 'token.json';
 class Calendar extends Component {
     constructor() {
         // Load client secrets from a local file.
+        console.log(fs);
         fs.readFile('credentials.json', (err, content) => {
             if (err) return console.log('Error loading client secret file:', err);
             // Authorize a client with credentials, then call the Google Calendar API.
-            authorize(JSON.parse(content), listTodaysEvents);
+            this.authorize(JSON.parse(content), this.listTodaysEvents);
         });
     }
     
@@ -39,7 +40,7 @@ class Calendar extends Component {
     
         // Check if we have previously stored a token.
         fs.readFile(TOKEN_PATH, (err, token) => {
-            if (err) return getAccessToken(oAuth2Client, callback);
+            if (err) return this.getAccessToken(oAuth2Client, callback);
             oAuth2Client.setCredentials(JSON.parse(token));
             callback(oAuth2Client);
         });
