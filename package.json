@@ -8,6 +8,7 @@
     "gapi-client": "0.0.3",
     "google-auth-library": "^5.5.1",
     "googleapis": "^39.2.0",
+    "moment": "^2.24.0",
     "react": "^16.11.0",
     "react-bootstrap": "^1.0.0-beta.14",
     "react-dom": "^16.11.0",

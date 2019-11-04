@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Client from '../client/client';
+import CalendarEvent from '../components/CalendarEvent';
 
 class Calendar extends Component {
     constructor(props) {
@@ -22,7 +23,7 @@ class Calendar extends Component {
         let events;
         if (this.state && this.state.events) {
             events = this.state.events.map((event) => (
-                <div key={event}>{event.eventCreator.email} : {event.eventName}</div>
+                <CalendarEvent event={event} />
             ));
         } else {
             events = <div>No events!</div>

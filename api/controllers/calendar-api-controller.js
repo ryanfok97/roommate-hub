@@ -1,15 +1,15 @@
 'use strict';
 
-const path = require('path'),
-    google = require('googleapis').google,
-    calendar = google.calendar("v3"),
-    googleAuth = require('google-auth-library');
+const google = require('googleapis').google,
+      calendar = google.calendar("v3");
 
-// If modifying these scopes, delete your previously saved credentials
-// at ~/.credentials/calendar-nodejs-quickstart.json
-// Then run again `node build_token.js`
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
-const KEYS = '../api/bin/credentials/roommate-hub-09b3443d0496.json';
+const KEYS = '../api/bin/credentials/Roommate Hub-0b6766b87bc5.json';
+const CALENDARS = [
+    'fokb@uw.edu',
+    'ktsh99@uw.edu',
+    'rangerred101@gmail.com'
+];
 
 const client = new google.auth.JWT(
     KEYS.client_email,
@@ -20,25 +20,32 @@ const client = new google.auth.JWT(
     null,
 );
 
-async function listEvents(res) {
-    const TODAY = new Date((new Date()).setHours(0, 0, 0, 0));
-    var response = await calendar.events.list({
-        auth: client,
-        calendarId: 'fokb@uw.edu',
-        timeMin: TODAY.toISOString(),
-        timeMax: (new Date(TODAY.setHours(24, 0, 0, 0)).toISOString()),
-    });
+const listEvents = async (res) => {    
+    var response = [];
 
-    res.json(response.data.items.map((event) => {
-        return {
-            eventId: event.id,
-            eventCreator: event.creator,
-            eventName: event.summary,
-            eventStart: event.start,
-            eventEnd: event.end
-        };
-    }));
+    for (let cid of CALENDARS) {
+        let currResponse = await requestEvents(cid);
+        response = response.concat(currResponse.data.items);
+    }
+
+    res.json(response);
 }
+
+const requestEvents = async (cid) => {
+    const TODAY = new Date((new Date()).setHours(0, 0, 0, 0));
+    return await calendar.events.list({
+        auth: client,
+        timeMin: TODAY.toISOString(),
+        timeMax: (new Date(TODAY.setDate(TODAY.getDate() + 1))).toISOString(),
+        calendarId: cid,
+        showDeleted: false,
+        singleEvents: true
+    });
+}
+
+const concatResponse = async (orig, response) => {
+    orig = await orig.concat(response.data.items);
+} 
 
 exports.listEvents = (res) => {
     listEvents(res);
