@@ -7,8 +7,7 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 const KEYS = '../api/bin/credentials/Roommate Hub-0b6766b87bc5.json';
 const CALENDARS = [
     'fokb@uw.edu',
-    'ktsh99@uw.edu',
-    'rangerred101@gmail.com'
+    'ktsh99@uw.edu'
 ];
 
 const client = new google.auth.JWT(
@@ -25,7 +24,10 @@ const listEvents = async (res) => {
 
     for (let cid of CALENDARS) {
         let currResponse = await requestEvents(cid);
-        response = response.concat(currResponse.data.items);
+        response.push({
+            creator: currResponse.data.summary,
+            events: currResponse.data.items
+        });
     }
 
     res.json(response);
@@ -42,10 +44,6 @@ const requestEvents = async (cid) => {
         singleEvents: true
     });
 }
-
-const concatResponse = async (orig, response) => {
-    orig = await orig.concat(response.data.items);
-} 
 
 exports.listEvents = (res) => {
     listEvents(res);
