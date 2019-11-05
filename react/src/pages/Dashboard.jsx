@@ -32,7 +32,7 @@ class Dashboard extends Component {
                         </Col>
                     </Row>
                 </Container>
-                <Button as={Link} to='/calendar'>This button is a link</Button>
+                <Button as={Link} to='/calendar'>Calendar</Button>
             </div>
         );
     }

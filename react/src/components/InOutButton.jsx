@@ -1,13 +1,20 @@
 import React, { Component } from 'react';
 
-import Button from 'react-bootstrap/Button';
+import { ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 
 class InOutButton extends Component {
     render() {
         return (
-            <Button className='in-out-button'>
-                {this.props.name}
-            </Button>
+            <div>
+                <h3>{this.props.name}</h3>
+                <ToggleButtonGroup 
+                    name={this.props.name} 
+                    defaultValue={1}
+                >
+                    <ToggleButton value={1} variant='success'>In</ToggleButton>
+                    <ToggleButton value={2} variant='danger'>Out</ToggleButton>
+                </ToggleButtonGroup>
+            </div>
         );
     }
 }
