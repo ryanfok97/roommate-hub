@@ -4,7 +4,7 @@ const google = require('googleapis').google,
       calendar = google.calendar("v3");
 
 const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
-const KEYS = '../credentials/Roommate Hub-0b6766b87bc5.json';
+const KEYS = './credentials/Roommate Hub-0b6766b87bc5.json';
 const CALENDARS = [
     'fokb@uw.edu',
     'ktsh99@uw.edu'
