@@ -8,14 +8,14 @@ class Calendar extends Component {
 
         this.state = {
             calendars: []
-        }
+        };
     }
 
     async componentWillMount() {
         await Client.listEvents((response) => {
             this.setState({
                 calendars: response
-            })
+            });
         });
     }
 
