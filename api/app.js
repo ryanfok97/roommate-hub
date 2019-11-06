@@ -6,7 +6,7 @@ var logger = require('morgan');
 
 var app = express();
 
-var calendarRoute = require('./controllers/calendar-api-controller');
+var calendarRoute = require('./routes/calendar-api-route');
 var cors = require('cors');
 
 // view engine setup
@@ -21,9 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors());
 
-app.get('/calendar/events', (req, res) => {
-  calendarRoute.listEvents(res);
-});
+app.use('/calendar', calendarRoute);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
