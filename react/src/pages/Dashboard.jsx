@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import InOutButton from '../components/InOutButton';
+import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import InOutButton from '../components/InOutButton';
+import AddRoommateModal from '../components/AddRoommateModal';
 
 class Dashboard extends Component {
     constructor(props) {
@@ -10,36 +11,53 @@ class Dashboard extends Component {
 
         this.state = {
             names: [],
-            showModal: false,
+            addModalShow: false,
+            addModalName: ''
         };
+
+        this.handleChangeAddRoommate = this.handleChangeAddRoommate.bind(this);
+        this.handleSubmitAddRoommate = this.handleSubmitAddRoommate.bind(this);
     }
 
-    handleShowModal() {
+    handleChangeAddRoommate(e) {
+        this.setState({addModalName: e.target.value});
+    }
 
+    handleSubmitAddRoommate(e) {
+        e.preventDefault();
+        console.log("Roommate added: " + this.state.addModalName);
+
+        this.setState({
+            names: [...this.state.names, this.state.addModalName],
+            addModalName: '',
+            addModalShow: false
+        });
     }
 
     render() {
+        const inOutButtons = this.state.names.map((name) => 
+            <Col>
+                <InOutButton name={name} />
+            </Col>
+        );
         return (
             <div className='app'>
                 <h1>Dashboard</h1>
-                <Button onClick={this.handleShowModal}>Add roommate</Button>
+                <Button onClick={() => this.setState({addModalShow: true})}>Add roommate</Button>
                 <Container>
                     <Row>
-                        <Col>
-                            <InOutButton name='Brandon' />
-                        </Col>
-                        <Col>
-                            <InOutButton name='Kadison' />
-                        </Col>    
-                        <Col>
-                            <InOutButton name='Ryan' />
-                        </Col>
-                        <Col>
-                            <InOutButton name='Steven' />
-                        </Col>
+                        {inOutButtons}
                     </Row>
                 </Container>
                 <Button as={Link} to='/calendar'>Calendar</Button>
+
+                <AddRoommateModal 
+                    show={this.state.addModalShow}
+                    onHide={() => this.setState({addModalShow: false})}
+                    addModalName={this.state.addModalName}
+                    onChangeAddRoommate={this.handleChangeAddRoommate}
+                    onSubmitAddRoommate={this.handleSubmitAddRoommate}
+                />
             </div>
         );
     }
