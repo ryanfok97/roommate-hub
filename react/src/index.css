@@ -16,6 +16,8 @@ code {
     text-align: center;
 }
 
+.btn:focus, .btn.focus { box-shadow: none; }
+
 .btn-success, .btn-danger {
     background-color: rgb(110, 110, 110);
     border-color: rgb(80, 80, 80);
