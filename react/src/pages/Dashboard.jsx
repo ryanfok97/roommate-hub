@@ -32,7 +32,8 @@ class Dashboard extends Component {
                         </Col>
                     </Row>
                 </Container>
-                <Button as={Link} to='/calendar'>This button is a link</Button>
+                <Button as={Link} to='/calendar'>This button is a link to Calendar</Button>
+                <Button as={Link} to='/spotify'>This button is a link to Spotify</Button>
             </div>
         );
     }

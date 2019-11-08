@@ -25,3 +25,17 @@ code {
 .row {
     margin-bottom: 1rem;
 }
+
+.spotify-img {
+    height: 4rem;
+    width: 4rem;
+}
+
+.spotify-item-title {
+    font-size: 1rem;
+}
+
+.spotify-item-subtitle {
+    color: gray;
+    font-size: 0.8rem;
+}

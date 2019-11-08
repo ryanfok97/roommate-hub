@@ -1,4 +1,4 @@
-const listEvents = async (callback) => {
+async function listEvents(callback) {
     const response = await fetch('http://localhost:3001/calendar/events', {
         accept: 'application/json'
     })
@@ -10,11 +10,11 @@ const listEvents = async (callback) => {
     });
 }
 
-const parseJson = async (res) => {
+async function parseJson(res) {
     return res.json();
 }
 
-const checkStatus = (response) => {
+function checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {
         return response;
     }
@@ -25,8 +25,8 @@ const checkStatus = (response) => {
     throw error;
 };
 
-const Client = {
+const GoogleApiClient = {
     listEvents
 };
 
-export default Client;
+export default GoogleApiClient;

@@ -26,8 +26,13 @@ function authorize() {
 };
 
 function search(req, res) {
+    if (!req.query.query) {
+        console.error("Query must be non-empty.");
+        res.status(400).send("Query must be non-empty.");
+        return;
+    }
     //spotifyApi.searchTracks(req.query.track, { market: 'US' })
-    spotifyApi.search(req.query.query, ['album', 'artist', 'playlist', 'track'], { market: 'US' })
+    spotifyApi.search(req.query.query, ['track', 'album', 'playlist'], { market: 'US' })
     .then(function(data) {
         console.log('Search by "' + req.query.track + '"', data.body);
         res.json(data.body);
