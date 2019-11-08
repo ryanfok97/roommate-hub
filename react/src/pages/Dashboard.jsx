@@ -1,44 +1,67 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Container, Row, Col, Button, Form } from 'react-bootstrap';
+import { Container, Row, Button } from 'react-bootstrap';
 
 import InOutButton from '../components/InOutButton';
 import AddRoommateModal from '../components/AddRoommateModal';
+import RemoveRoommateModal from '../components/RemoveRoommateModal';
 
 class Dashboard extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            names: [],
+            names: ['Brandon', 'Kadison', 'Ryan', 'Steven'],
             addModalShow: false,
             addModalName: ''
         };
 
         this.handleChangeAddRoommate = this.handleChangeAddRoommate.bind(this);
-        this.handleSubmitAddRoommate = this.handleSubmitAddRoommate.bind(this);
+        this.handleAddRoommate = this.handleAddRoommate.bind(this);
+        this.handleRemoveRoommate = this.handleRemoveRoommate.bind(this);
     }
 
     handleChangeAddRoommate(e) {
-        this.setState({addModalName: e.target.value});
+        this.setState({ addModalName: e.target.value });
     }
 
-    handleSubmitAddRoommate(e) {
+    handleAddRoommate(e) {
         e.preventDefault();
         console.log("Roommate added: " + this.state.addModalName);
+        var newNames = [...this.state.names, this.state.addModalName].sort();
 
         this.setState({
-            names: [...this.state.names, this.state.addModalName],
+            names: newNames,
             addModalName: '',
-            addModalShow: false
+            addModalShow: false,
+            removeModalName: '',
+            removeModalShow: false
+        });
+    }
+
+    handleRemoveRoommate(e) {
+        var newNames = [...this.state.names];
+        newNames.splice(newNames.indexOf(this.state.removeModalName), 1);
+        console.log("Roommate removed: " + this.state.removeModalName);
+
+        this.setState({
+            names: newNames,
+            removeModalName: '',
+            removeModalShow: false
+        });
+    }
+
+    handleShowRemoveModal(name, e) {
+        // console.log(name);
+        this.setState({
+            removeModalName: name,
+            removeModalShow: true
         });
     }
 
     render() {
         const inOutButtons = this.state.names.map((name) => 
-            <Col>
-                <InOutButton name={name} />
-            </Col>
+            <InOutButton key={name} name={name} handleShowRemoveModal={(name, e) => this.handleShowRemoveModal(name, e)} />
         );
         return (
             <div className='app'>
@@ -56,7 +79,13 @@ class Dashboard extends Component {
                     onHide={() => this.setState({addModalShow: false})}
                     addModalName={this.state.addModalName}
                     onChangeAddRoommate={this.handleChangeAddRoommate}
-                    onSubmitAddRoommate={this.handleSubmitAddRoommate}
+                    onAddRoommate={this.handleAddRoommate}
+                />
+                <RemoveRoommateModal
+                    show={this.state.removeModalShow}
+                    onHide={() => this.setState({removeModalShow: false})}
+                    name={this.state.removeModalName}
+                    onRemoveRoommate={this.handleRemoveRoommate}
                 />
             </div>
         );

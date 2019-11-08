@@ -5,7 +5,7 @@ class AddRoommateModal extends Component {
     render() {
         return (
             <Modal show={this.props.show} onHide={this.props.onHide} centered>
-                <Form onSubmit={this.props.onSubmitAddRoommate}>
+                <Form onSubmit={this.props.onAddRoommate}>
                     <Modal.Header closeButton>
                         <Modal.Title>Add a roommate</Modal.Title>
                     </Modal.Header>
