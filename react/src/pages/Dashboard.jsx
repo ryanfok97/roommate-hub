@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Container, Row, Button } from 'react-bootstrap';
+import { Button, Container, Dropdown, DropdownButton, Row } from 'react-bootstrap';
 
 import InOutButton from '../components/InOutButton';
 import AddRoommateModal from '../components/AddRoommateModal';
@@ -60,14 +60,27 @@ class Dashboard extends Component {
     }
 
     render() {
+        // TODO: make this configurable -- number of roommates per row? 4?
         const inOutButtons = this.state.names.map((name) => 
-            <InOutButton key={name} name={name} handleShowRemoveModal={(name, e) => this.handleShowRemoveModal(name, e)} />
+            <InOutButton key={name} name={name} 
+                    handleShowRemoveModal={(name, e) => this.handleShowRemoveModal(name, e)}
+            />
         );
+        // TODO: make sticky notes possible
         return (
             <div className='app'>
                 <h1>Dashboard</h1>
-                <Button onClick={() => this.setState({addModalShow: true})}>Add roommate</Button>
-                <Container>
+                <DropdownButton alignRight id='dashboard-add-dropdown' 
+                                title='+' className='dashboard-add-dropdown'
+                >
+                    <Dropdown.Item eventKey='1' onClick={() => this.setState({addModalShow: true})}>
+                        Add Roommate
+                    </Dropdown.Item>
+                    <Dropdown.Item eventKey='2' onClick={() => this.setState({})}>
+                        Add Note
+                    </Dropdown.Item>
+                </DropdownButton>
+                <Container fluid>
                     <Row>
                         {inOutButtons}
                     </Row>

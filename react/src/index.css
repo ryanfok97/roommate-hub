@@ -11,7 +11,7 @@ code {
 }
 
 .app {
-    background: lightgray;
+    background: darkgray; /*rgb(50, 88, 40);*/
     height: 100vh;
     text-align: center;
 }
@@ -25,4 +25,11 @@ code {
 
 .row {
     margin-bottom: 1rem;
+}
+
+#dashboard-add-dropdown, .dashboard-add-dropdown {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: .5rem .5rem;
 }
