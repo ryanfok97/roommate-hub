@@ -5,6 +5,7 @@ import { Button, Container, Dropdown, DropdownButton, Row } from 'react-bootstra
 import InOutButton from '../components/InOutButton';
 import AddRoommateModal from '../components/AddRoommateModal';
 import RemoveRoommateModal from '../components/RemoveRoommateModal';
+import StickyNoteWall from '../components/StickyNoteWall';
 
 class Dashboard extends Component {
     constructor(props) {
@@ -61,6 +62,7 @@ class Dashboard extends Component {
 
     render() {
         // TODO: make this configurable -- number of roommates per row? 4?
+        // TODO: also make this into a different component
         const inOutButtons = this.state.names.map((name) => 
             <InOutButton key={name} name={name} 
                     handleShowRemoveModal={(name, e) => this.handleShowRemoveModal(name, e)}
@@ -69,7 +71,7 @@ class Dashboard extends Component {
         // TODO: make sticky notes possible
         return (
             <div className='app'>
-                <h1>Dashboard</h1>
+                <h1 className='text-center'>Dashboard</h1>
                 <DropdownButton alignRight id='dashboard-add-dropdown' 
                                 title='+' className='dashboard-add-dropdown'
                 >
@@ -85,6 +87,11 @@ class Dashboard extends Component {
                         {inOutButtons}
                     </Row>
                 </Container>
+                
+                <Container fluid>
+                    <StickyNoteWall />
+                </Container>
+
                 <Button as={Link} to='/calendar'>Calendar</Button>
 
                 <AddRoommateModal 

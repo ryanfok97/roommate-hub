@@ -13,7 +13,6 @@ code {
 .app {
     background: darkgray; /*rgb(50, 88, 40);*/
     height: 100vh;
-    text-align: center;
 }
 
 .btn:focus, .btn.focus { box-shadow: none; }
@@ -25,6 +24,15 @@ code {
 
 .row {
     margin-bottom: 1rem;
+}
+
+.sticky-note {
+    background-color: rgb(255, 249, 171);
+    max-width: 20rem;
+}
+
+.text-center {
+    text-align: center;
 }
 
 #dashboard-add-dropdown, .dashboard-add-dropdown {
