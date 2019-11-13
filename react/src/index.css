@@ -22,13 +22,35 @@ code {
     border-color: rgb(80, 80, 80);
 }
 
+.in-out-btn {
+    background-color: rgb(170, 5, 5);
+    padding: 1rem;
+}
+
+.in-out-btn.active, .in-out-btn.hover {
+    background-color: green;
+    border-color: green;
+}
+
+.in-out-btn-toggle.active {
+    height: 4rem;
+}
+
+.in-out-btn-toggle {
+    height: 3rem;
+}
+
 .row {
     margin-bottom: 1rem;
 }
 
 .sticky-note {
     background-color: rgb(255, 249, 171);
+    border-radius: 0;
     max-width: 30rem;
+    -moz-box-shadow: 4px 4px 7px rgba(33,33,33,1);
+    -webkit-box-shadow: 4px 4px 7px rgba(33,33,33,.7);
+    box-shadow: 4px 4px 7px rgba(33,33,33,.7);
 }
 
 .sticky-note-title {
@@ -51,13 +73,9 @@ code {
     width: 100%;
 }
 
-.text-center {
-    text-align: center;
-}
-
-#dashboard-add-dropdown, .dashboard-add-dropdown {
+/* #dashboard-add-dropdown, .dashboard-add-dropdown {
     position: absolute;
     top: 0;
     right: 0;
     margin: .5rem .5rem;
-}
+} */

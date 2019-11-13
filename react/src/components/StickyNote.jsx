@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, Form } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 
 class StickyNote extends Component {
     render() {
@@ -15,9 +15,8 @@ class StickyNote extends Component {
         return (
             <Card className='sticky-note'>
                 <Card.Body style={{padding: '.25rem'}}>
-                    <Card.Title as='input' className='sticky-note-title h5' placeholder='Note Title'></Card.Title>
-                    <Card.Text as='textarea' className='sticky-note-text' placeholder='Note Text'>
-                    </Card.Text>
+                    <Card.Title as='input' className='sticky-note-title h5' placeholder='Note Title' />
+                    <Card.Text as='textarea' className='sticky-note-text' placeholder="What's your passive aggressive message?" />
                 </Card.Body>
             </Card>
         );
