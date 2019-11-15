@@ -1,13 +1,15 @@
+var Data = require('../server-data/data');
+
 const credentials = require('../credentials/spotify-api-credentials.json');
-console.log(credentials);
 
 var SpotifyWebApi = require('spotify-web-api-node');
 
 // Create the api object with the credentials
 var spotifyApi = new SpotifyWebApi(credentials);
 
-// Authorize api object on start
+// Authorize api object on start (get access token)
 authorize();
+tokenRefreshInterval = setInterval(authorize, 1000 * 60 * 60); // refresh every hour
 
 function authorize() {
     // Retrieve an access token.
@@ -29,7 +31,6 @@ function search(req, res) {
     if (!req.query.query) {
         console.error("Query must be non-empty.");
         res.status(400).send("Query must be non-empty.");
-        return;
     }
     //spotifyApi.searchTracks(req.query.track, { market: 'US' })
     spotifyApi.search(req.query.query, ['track', 'album', 'playlist'], { market: 'US' })
@@ -41,6 +42,23 @@ function search(req, res) {
     });
 }
 
-exports.search = (req, res) => {
+function getQueue(req, res) {
+    res.status(200).json(Data.queue);
+}
+
+function addTrackToQueue(req, res) {
+    Data.addTrack(req.query.uris);
+    res.status(200).send("Current queue: " + Data.queue);
+}
+
+module.exports.getQueue = (req, res) => {
+    getQueue(req, res);
+}
+
+module.exports.search = (req, res) => {
     search(req, res);
+}
+
+module.exports.addTrackToQueue = (req, res) => {
+    addTrackToQueue(req, res);
 }

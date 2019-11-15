@@ -5,6 +5,7 @@
  */
 
 var app = require('../app');
+var adminApp = require('../adminApp');
 var debug = require('debug')('api:server');
 var http = require('http');
 
@@ -14,12 +15,15 @@ var http = require('http');
 
 var port = normalizePort(process.env.PORT || '3001');
 app.set('port', port);
+var adminPort = normalizePort(process.env.PORT || '3002');
+adminApp.set('port', adminPort);
 
 /**
  * Create HTTP server.
  */
 
 var server = http.createServer(app);
+var adminServer = http.createServer(adminApp);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -28,6 +32,10 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+adminServer.listen(adminPort, 'localhost'); // only allow this computer access to adminServer
+adminServer.on('error', onError);
+adminServer.on('listening', onListening);
 
 /**
  * Normalize a port into a number, string, or false.
