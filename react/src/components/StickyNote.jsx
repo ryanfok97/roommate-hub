@@ -14,7 +14,10 @@ class StickyNote extends Component {
         */
         return (
             <Card className='sticky-note'>
-                <Card.Body style={{padding: '.25rem'}}>
+                <Card.Body className='p-1'>
+                    <button className='sticky-close close' onClick={(e) => this.props.handleDeleteStickyNote(this.props.idx, e)}>
+                        <span aria-hidden='true'>&times;</span>
+                    </button>
                     <Card.Title as='input' className='sticky-note-title h5' placeholder='Note Title' />
                     <Card.Text as='textarea' className='sticky-note-text' placeholder="What's your passive aggressive message?" />
                 </Card.Body>
