@@ -22,26 +22,19 @@ code {
     border-color: rgb(80, 80, 80);
 }
 
-.in-out-btn {
-    background-color: rgb(170, 5, 5);
-    padding: 1rem;
-}
-
-.in-out-btn.active, .in-out-btn.hover {
-    background-color: green;
-    border-color: green;
-}
-
-.in-out-btn-toggle.active {
-    height: 4rem;
-}
+.in-out-btn-toggle.active { height: 4rem; }
 
 .in-out-btn-toggle {
+    border-radius: 0 0 .5rem .5rem !important;
     height: 3rem;
+    margin: 0 .5rem !important;
 }
 
-.row {
-    margin-bottom: 1rem;
+.sticky-close {
+    position: absolute;
+    margin-right: .2rem;
+    right: 0;
+    top: 0;
 }
 
 .sticky-note {

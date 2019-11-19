@@ -25,30 +25,32 @@ class InOutButton extends Component {
     render() {
         return (
             <Col>
-                <div>
-                    <ToggleButtonGroup type='checkbox'>
-                        <ToggleButton defaultChecked className='in-out-btn' variant='success'>
-                            <h3 style={{margin: '0'}}>{this.props.name}</h3>
-                        </ToggleButton>
-                    </ToggleButtonGroup>
-
-                    <Row noGutters className='justify-content-center align-items-center'>
+                <div className='pl-5'>
+                    <Row noGutters className='justify-content-center align-items-center m-0 border border-dark bg-light'>
                         <Col xs sm='auto'>
-                            <h3 style={{margin: '0'}}>{this.props.name}</h3>
+                            <h3 className='m-0'>{this.props.name}</h3>
                         </Col>
-                        <Col xs sm='auto' style={{marginLeft: '.5rem'}}>
-                            <button className='close' onClick={(e) => this.props.handleShowRemoveModal(this.props.name, e)}>X</button>
+                        <Col xs sm='auto' className='ml-2'>
+                            <button className='close' aria-label='Close'
+                                    onClick={(e) => this.props.handleShowRemoveModal(this.props.name, e)}>
+                                <span aria-hidden='true'>&times;</span>
+                            </button>
                         </Col>
                     </Row>
-                    <Row className='justify-content-center'>
+                    <Row className='justify-content-center m-0'>
                         <ToggleButtonGroup 
+                            className='w-75 btn-group-justified'
                             name={this.props.name} 
                             defaultValue={1}
                             onChange={this.handleChange}
                             value={this.state.value}
                         >
-                            <ToggleButton value={1} variant='success' className='in-out-btn-toggle'>In</ToggleButton>
-                            <ToggleButton value={2} variant='danger' className='in-out-btn-toggle'>Out</ToggleButton>
+                            <ToggleButton value={1} variant='success' className='in-out-btn-toggle btn-block'>
+                                In
+                            </ToggleButton>
+                            <ToggleButton value={2} variant='danger' className='in-out-btn-toggle btn-block'>
+                                Out
+                            </ToggleButton>
                         </ToggleButtonGroup>
                     </Row>
                 </div>

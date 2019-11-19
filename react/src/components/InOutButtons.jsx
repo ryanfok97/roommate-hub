@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import InOutButton from './InOutButton';
-import { Button, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Row } from 'react-bootstrap';
 
 class InOutButtons extends Component {
     render() {
@@ -12,10 +12,14 @@ class InOutButtons extends Component {
             />
         );
         return (
-            <Container fluid>
-                <Row style={{alignItems: 'center'}}>
+            <Container fluid className='my-3'>
+                <Row className='align-items-center'>
                     {inOutButtons}
-                    <Button style={{maxHeight: '4rem', marginRight: '5rem'}} onClick={this.props.handleShowAddModal}>+</Button>
+                    <Col xs sm='auto' className='mx-5'>
+                        <div>
+                            <Button onClick={this.props.handleShowAddModal}>+</Button>
+                        </div>
+                    </Col>
                 </Row>
             </Container>
 );
