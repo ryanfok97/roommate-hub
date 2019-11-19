@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Container, Dropdown, DropdownButton, Row } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 
-import InOutButton from '../components/InOutButton';
 import AddRoommateModal from '../components/AddRoommateModal';
 import RemoveRoommateModal from '../components/RemoveRoommateModal';
 import StickyNoteWall from '../components/StickyNoteWall';
@@ -62,20 +61,10 @@ class Dashboard extends Component {
     }
 
     render() {
-        // TODO: make sticky notes possible
         return (
             <div className='app'>
-                <h1 className='text-center'>Dashboard</h1>
-                {/* <DropdownButton alignRight id='dashboard-add-dropdown' 
-                                title='+' className='dashboard-add-dropdown'
-                >
-                    <Dropdown.Item eventKey='1' onClick={() => this.setState({addModalShow: true})}>
-                        Add Roommate
-                    </Dropdown.Item>
-                    <Dropdown.Item eventKey='2' onClick={() => this.setState({})}>
-                        Add Note
-                    </Dropdown.Item>
-                </DropdownButton> */}
+                <h1 className='text-center m-0'>Dashboard</h1>
+
                 <InOutButtons
                     names={this.state.names} 
                     handleShowAddModal={() => this.setState({addModalShow: true})}
@@ -85,7 +74,6 @@ class Dashboard extends Component {
 
                 <Button as={Link} to='/calendar'>Calendar</Button>
 
-                <h1 className='text-center' style={{fontSize: '5rem', color: 'firebrick'}}>hello saralyn and alfred i've been expecting you xoxo</h1>
                 <AddRoommateModal 
                     show={this.state.addModalShow}
                     onHide={() => this.setState({addModalShow: false})}
