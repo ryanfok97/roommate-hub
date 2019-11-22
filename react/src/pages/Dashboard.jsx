@@ -17,19 +17,22 @@ class Dashboard extends Component {
             addModalName: ''
         };
 
-        this.handleChangeAddRoommate = this.handleChangeAddRoommate.bind(this);
+        this.handleChangeAddRoommateModal = this.handleChangeAddRoommateModal.bind(this);
         this.handleAddRoommate = this.handleAddRoommate.bind(this);
         this.handleRemoveRoommate = this.handleRemoveRoommate.bind(this);
     }
 
-    handleChangeAddRoommate(e) {
+    handleChangeAddRoommateModal(e) {
         this.setState({ addModalName: e.target.value });
     }
 
     handleAddRoommate(e) {
         e.preventDefault();
-        console.log("Roommate added: " + this.state.addModalName);
-        var newNames = [...this.state.names, this.state.addModalName].sort();
+        // console.log("Roommate added: " + this.state.addModalName);
+        // capitalize first letter
+        var newName = this.state.addModalName.substr(0, 1).toUpperCase()
+                                    + this.state.addModalName.substr(1);
+        var newNames = [...this.state.names, newName].sort();
 
         this.setState({
             names: newNames,
@@ -78,7 +81,7 @@ class Dashboard extends Component {
                     show={this.state.addModalShow}
                     onHide={() => this.setState({addModalShow: false})}
                     addModalName={this.state.addModalName}
-                    onChangeAddRoommate={this.handleChangeAddRoommate}
+                    onChangeAddRoommate={this.handleChangeAddRoommateModal}
                     onAddRoommate={this.handleAddRoommate}
                 />
                 <RemoveRoommateModal

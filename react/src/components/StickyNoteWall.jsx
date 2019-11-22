@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Card, CardColumns, Container } from 'react-bootstrap';
+import { Button, Card, Container } from 'react-bootstrap';
 import StickyNote from './StickyNote';
 
 class StickyNoteWall extends Component {
@@ -34,12 +34,10 @@ class StickyNoteWall extends Component {
 
     render() {
         return (
-            <Container fluid className='my-3'>
-                <CardColumns className='text-center'>
-                    {this.state.notes}
-                    <Button as={Card} style={{fontSize: '2rem'}} 
-                        className='sticky-note p-0 bg-transparent text-dark' onClick={() => this.handleAddStickyNote()}>+</Button>
-                </CardColumns>
+            <Container fluid className='my-3 text-center d-flex justify-content-around'>
+                {this.state.notes}
+                <Button as={Card} style={{fontSize: '2rem', overflow: 'visible', resize: 'none'}} 
+                    className='sticky-note p-0 bg-transparent text-dark' onClick={() => this.handleAddStickyNote()}>+</Button>
             </Container>
         );
     }

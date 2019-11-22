@@ -5,7 +5,6 @@ import { Button, Col, Container, Row } from 'react-bootstrap';
 class InOutButtons extends Component {
     render() {
         // TODO: make this configurable -- number of roommates per row? 4?
-        // TODO: also make this into a different component
         const inOutButtons = this.props.names.map((name) => 
             <InOutButton key={name} name={name} 
                     handleShowRemoveModal={(name, e) => this.props.handleShowRemoveModal(name, e)}

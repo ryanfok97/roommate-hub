@@ -26,8 +26,10 @@ code {
 
 .in-out-btn-toggle {
     border-radius: 0 0 .5rem .5rem !important;
-    height: 3rem;
+    font-size: 1.5rem;
+    height: fit-content;
     margin: 0 .5rem !important;
+    width: 100%;
 }
 
 .sticky-close {
@@ -40,11 +42,30 @@ code {
 .sticky-note {
     background-color: rgb(255, 249, 171);
     border-radius: 0;
-    max-width: 30rem;
+    width: 20%;
+    max-width: 100%;
     -moz-box-shadow: 4px 4px 7px rgba(33,33,33,1);
     -webkit-box-shadow: 4px 4px 7px rgba(33,33,33,.7);
     box-shadow: 4px 4px 7px rgba(33,33,33,.7);
+    resize: both;
+    overflow: auto;
 }
+
+/* ::-webkit-scrollbar {
+    width: 15px;
+    background:lightgray;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,255,1);
+    border-radius: 15px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 15px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    background: rgb(80, 80, 80);
+}  */
 
 .sticky-note-title {
     background-color: transparent;
@@ -52,6 +73,7 @@ code {
     font-weight: bold;
     margin: 0;
     outline: none;
+    overflow: hidden;
     padding: .1rem;
     width: 100%;
 }
@@ -59,11 +81,19 @@ code {
 .sticky-note-text {
     background-color: transparent;
     border: none;
+    cursor: text;
+    height: 80%;
     outline: none;
     padding: .1rem;
     resize: none;
+    text-align: left;
     transition: none;
     width: 100%;
+}
+
+[contentEditable=true]:empty:not(focus):before {
+    content:attr(placeholder);
+    color: gray;
 }
 
 /* #dashboard-add-dropdown, .dashboard-add-dropdown {
