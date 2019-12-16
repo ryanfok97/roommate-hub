@@ -1,5 +1,7 @@
-async function search(query, callback) {
-    const response = await fetch('http://localhost:3001/spotify/search?query=' + query, {
+const BASE_URL = "http://localhost:3001";
+
+function search(query, callback) {
+    fetch(BASE_URL + '/spotify/search?query=' + query, {
         accept: 'application/json'
     })
     .then(checkStatus)
@@ -10,7 +12,53 @@ async function search(query, callback) {
     });
 }
 
-async function parseJson(res) {
+function resume() {
+    fetch(BASE_URL + '/spotify/resume', {
+        method: 'PUT'
+    })
+    .then(checkStatus)
+    .catch((err) => {
+        console.log(err);
+    });
+}
+
+function pause() {
+    fetch(BASE_URL + '/spotify/pause', {
+        method: 'PUT'
+    })
+    .then(checkStatus)
+    .catch((err) => {
+        console.log(err);
+    });
+}
+
+function next() {
+    fetch(BASE_URL + '/spotify/next', {
+        method: 'PUT'
+    })
+    .then(checkStatus)
+    .catch((err) => {
+        console.log(err);
+    });
+}
+
+function getDevices(callback) {
+    fetch(BASE_URL + '/spotify/devices', {
+        method: 'GET'
+    })
+    .then(checkStatus)
+    .then(parseJson)
+    .then(callback)
+    .catch((err) => {
+        console.log(err);
+    })
+}
+
+/**************************************************
+ * HELPER METHODS                                 *
+ **************************************************/
+
+function parseJson(res) {
     return res.json();
 }
 
@@ -25,8 +73,22 @@ function checkStatus(response) {
     throw error;
 };
 
-const SpotifyApiClient = {
-    search
-};
+exports.search = (query, callback) => {
+    search(query, callback);
+}
 
-export default SpotifyApiClient;
+exports.resume = () => {
+    resume();
+}
+
+exports.pause = () => {
+    pause();
+}
+
+exports.next = () => {
+    next();
+}
+
+exports.getDevices = (callback) => {
+    getDevices(callback);
+}

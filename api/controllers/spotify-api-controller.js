@@ -1,4 +1,4 @@
-var Data = require('../server-data/data');
+var serverData = require('../server-data/data');
 
 const credentials = require('../credentials/spotify-api-credentials.json');
 
@@ -34,31 +34,31 @@ function search(req, res) {
     }
     //spotifyApi.searchTracks(req.query.track, { market: 'US' })
     spotifyApi.search(req.query.query, ['track', 'album', 'playlist'], { market: 'US' })
-    .then(function(data) {
-        console.log('Search by "' + req.query.track + '"', data.body);
+    .then((data) => {
+        console.log('Search by "' + req.query.track + '"',);
         res.json(data.body);
-    }, function(err) {
+    })
+    .catch((err) => {
         console.error(err);
     });
 }
 
-function getQueue(req, res) {
-    res.status(200).json(Data.queue);
+module.exports.getAlbumTracks = async (album) => {
+    const tracks = await spotifyApi.getAlbumTracks(album)
+    .catch((err) => {
+        console.err(err);
+    });
+    return tracks;
 }
 
-function addTrackToQueue(req, res) {
-    Data.addTrack(req.query.uris);
-    res.status(200).send("Current queue: " + Data.queue);
-}
-
-module.exports.getQueue = (req, res) => {
-    getQueue(req, res);
+module.exports.getPlaylistTracks = async (playlist) => {
+    const tracks = await spotifyApi.getPlaylistTracks(playlist)
+    .catch((err) => {
+        console.err(err);
+    });
+    return tracks;
 }
 
 module.exports.search = (req, res) => {
     search(req, res);
-}
-
-module.exports.addTrackToQueue = (req, res) => {
-    addTrackToQueue(req, res);
 }

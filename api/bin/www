@@ -26,6 +26,106 @@ var server = http.createServer(app);
 var adminServer = http.createServer(adminApp);
 
 /**
+ * Setup Socket.IO on non-Admin server
+ */
+var serverData = require('../server-data/data');
+var spotifyAdminController = require('../controllers/spotify-admin-controller');
+const io = require('socket.io')(server);
+io.on('connection', (socket) => {
+  socket.on("disconnect", () => {
+    if (socket.userName) {
+      serverData.removeUser(socket.userName);
+      socket.broadcast.emit('remove user', socket.userName);
+      console.log('REMOVE USER (' + socket.userName + ') successful: ' + serverData.users);
+    } else {
+      console.log('REMOVE USER (' + socket.userName + ') failed');
+    }
+  });
+
+  socket.on('new user', (name) => {
+    socket.userName = name;
+    serverData.addUser(name);
+    socket.broadcast.emit('new user', name);
+
+    // initialize data
+    socket.emit('init device', serverData.deviceId);
+    socket.emit('init queue', serverData.queue);
+    socket.emit('init current status', serverData.isPlaying);
+    socket.emit('init current playback', serverData.lastPlayed);
+    socket.emit('init users', serverData.users);
+
+    console.log('NEW USER (' + name + ') successful: ' + serverData.users);
+  });
+
+  socket.on('device change', (id) => {
+    serverData.deviceId = id;
+    socket.broadcast.emit('device change', id);
+
+    console.log('DEVICE CHANGE (' + socket.userName + ') successful: ' + id);
+  });
+
+  // Whenever a track is added/deleted from queue, update the clients
+  // TODO: add functionality for removing from queue
+  socket.on('add to queue', (obj) => {
+    serverData.addToQueue(obj)
+    .then(() => {
+      io.emit('add to queue', serverData.queue);
+      console.log('ADD TO QUEUE (' + socket.userName + ') successful: ');
+      console.log('    User: ' + obj.user);
+      console.log('    Type: ' + obj.spotifyObject.type);
+      console.log('    Name: ' + obj.spotifyObject.name);
+      if (obj.spotifyObject.type === 'track' || obj.spotifyObject.type === 'album') {
+        const artists = obj.spotifyObject.artists.map((artist) => artist.name);
+        console.log('    Artist(s): ' + artists);
+      } else {
+        console.log('    Owner: ' + obj.spotifyObject.owner.display_name);
+      }
+    });
+  });
+
+  socket.on('remove track', () => {
+
+  });
+
+  socket.on('resume', () => {
+    if (!serverData.isPlaying) {
+      spotifyAdminController.resume();
+      serverData.setIsPlaying(true);
+      io.emit('resume');
+      console.log('RESUME (' + socket.userName + ') successful');
+    } else {
+      console.log('RESUME (' + socket.userName + ') failed');
+    }
+    
+  });
+
+  socket.on('pause', () => {
+    if (serverData.isPlaying) {
+      spotifyAdminController.pause();
+      serverData.setIsPlaying(false);
+      io.emit('pause');
+      console.log('PAUSE (' + socket.userName + ') successful');
+    } else {
+      console.log('PAUSE (' + socket.userName + ') failed');
+    }
+  });
+
+  socket.on('next', () => {
+    if (serverData.hasNext()) {
+      spotifyAdminController.playNextTrack();
+      serverData.setIsPlaying(true);
+      io.emit('next', {
+        queue: serverData.queue.slice(),
+        currentPlayback: serverData.lastPlayed,
+      });
+      console.log('NEXT (' + socket.userName + ') successful');
+    } else {
+      console.log('NEXT (' + socket.userName + ') failed');
+    }
+  });
+});
+
+/**
  * Listen on provided port, on all network interfaces.
  */
 

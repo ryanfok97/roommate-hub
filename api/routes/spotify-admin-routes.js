@@ -10,18 +10,6 @@ router.get('/callback', (req, res) => {
     spotifyAdminController.callback(req, res);
 });
 
-router.put('/next', (req, res) => {
-    spotifyAdminController.playNextTrack(req, res);
-});
-
-router.put('/resume', (req, res) => {
-    spotifyAdminController.resume(res);
-});
-
-router.put('/pause', (req, res) => {
-    spotifyAdminController.pause(res);
-})
-
 // router.post('/scrub', (req, res) => {
 //     spotifyApi.seek
 // });

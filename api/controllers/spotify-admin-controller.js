@@ -1,4 +1,4 @@
-var Data = require('../server-data/data');
+var serverData = require('../server-data/data');
 var SpotifyWebApi = require('spotify-web-api-node');
 
 var trackTimeout;
@@ -10,6 +10,8 @@ var credentials = {
 }
 
 var spotifyApi = new SpotifyWebApi(credentials);
+
+//const DEVICE_ID = '44e8e24be11f9884039272bacaf3672e15f2dd69';//'6ba22e6e31de058aa6014842317225574a3a8539';
 
 function callback(req, res) {
   // Get authorization code
@@ -75,101 +77,108 @@ function callback(req, res) {
 * If there are tracks in queue, play the next track and return spotify api response
 * Otherwise, return 400 response "No tracks in queue"
 */
-async function playNextTrack(req, res) {
-    console.log(Data.queue);
-    if (Data.queue.length > 0) {
-        await spotifyApi.play({
-            'uris': [Data.next()],
-            'device_id': '6ba22e6e31de058aa6014842317225574a3a8539',
-            "position_ms": 0
-        }).catch((err) => {
-            console.error(err);
-            res.status(500).send("Error playing next track");
-        });
-  
-        // set trackTimeout
-        const currentlyPlaying = await spotifyApi.getMyCurrentPlaybackState().catch((err) => {
-            console.error(err);
-            res.status(500).send("Error getting current track after play");
-        });
-        console.log(currentlyPlaying);
-        setTrackTimeout(res, currentlyPlaying.body.item.duration_ms);
-        res.status(200).send('Playing: ' + currentlyPlaying.body.item.name);
+function playNextTrack() {
+    if (!serverData.hasNext()) {
+    } else if (!serverData.deviceId) {
     } else {
-        res.status(400).send("No tracks in queue");
+        const queueUris = serverData.queue.map((obj) => {
+            return obj.track.uri;
+        });
+        const next = serverData.next();
+        spotifyApi.play({
+            'uris': queueUris, // use spotify queue functionality to play next track on track end
+            'device_id': serverData.deviceId,
+            "position_ms": 0
+        })
+        // .then(setTrackTimeout(next.duration_ms))
+        .catch((err) => {
+            console.error(err);
+            return;
+        });
     }
 }
 
-async function resume(res) {
-    await spotifyApi.play({
-        'device_id': '6ba22e6e31de058aa6014842317225574a3a8539'
-    }).catch((err) => {
-        console.error(err);
-        res.status(500).send("Error resuming track");
-    });
-
-    // set trackTimeout
-    const currentlyPlaying = await spotifyApi.getMyCurrentPlaybackState().catch((err) => {
-        console.error(err);
-        res.status(500).send("Error getting current track after play");
-    });
-
-    console.log(currentlyPlaying.body.item);
-    setTrackTimeout(res, currentlyPlaying.body.item.duration_ms - currentlyPlaying.body.progress_ms);
-    res.status(200).send('Resumed: ' + currentlyPlaying.body.item.name);
+function resume() {
+    if (!serverData.deviceId) {
+    } else {
+        spotifyApi.play({
+            'device_id': serverData.deviceId
+        })
+        // .then(spotifyApi.getMyCurrentPlaybackState().then((currentlyPlaying) => {
+        //     // set track timeout
+        //     const timeRemaining = currentlyPlaying.body.item.duration_ms - currentlyPlaying.body.progress_ms;
+        //     setTrackTimeout(timeRemaining);
+        // }))
+        .catch((err) => {
+            console.error(err);
+        });
+    }
 }
 
-async function pause(res) {
-    await spotifyApi.pause({
-        'device_id': '6ba22e6e31de058aa6014842317225574a3a8539'
-    }).catch((err) => {
-        console.error(err);
-        res.status(500).send("Error pausing track");
-    });
+function pause() {
+    if (!serverData.deviceId) {
+    } else {
+        spotifyApi.pause({
+            'device_id': serverData.deviceId
+        })
+        // stop track timeout
+        .then(clearTimeout(trackTimeout))
+        .catch((err) => {
+            console.error(err);
+        });
+    }
+}
 
-    // stop trackTimeout, will start again on resume
-    clearTimeout(trackTimeout);
-    res.status(200).send("Paused track");
+async function getDevices(res) {
+    await spotifyApi.getMyDevices()
+    .then((data) => {
+        res.status(200).send(data.body.devices);
+    })
+    .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error getting devices");
+    })
 }
 
 module.exports.callback = (req, res) => {
     callback(req, res);
 }
 
-module.exports.playNextTrack = (req, res) => {
-    playNextTrack(req, res);
+module.exports.playNextTrack = () => {
+    playNextTrack();
 }
 
-module.exports.resume = (res) => {
-    resume(res);
+module.exports.resume = () => {
+    resume();
 }
 
-module.exports.pause = (res) => {
-    pause(res);
+module.exports.pause = () => {
+    pause();
+}
+
+module.exports.getDevices = (res) => {
+    getDevices(res);
 }
 
 /**************************************************
  * HELPER METHODS                                 *
  **************************************************/
 
-/*
- * Return true if a track is currently playing, else return false
- */
-async function isCurrentlyPlaying(res) {
-  const currentlyPlaying = await spotifyApi.getMyCurrentPlaybackState().catch((err) => {
-      console.log(err);
-      res.status(500).send("Error getting currently playing track");
-  });
-  return currentlyPlaying.body.is_playing
+function getCurrentTrack() {
+    spotifyApi.getMyCurrentPlayingTrack().then((data) => {
+        return data.body.item;
+    })
 }
 
 /* 
  * Reset trackTimeout to given time (in ms)
  * trackTimeout calls playNextTrack() on timeout
  */
-function setTrackTimeout(res, timeRemaining) {
-  clearTimeout(trackTimeout);
-  trackTimeout = setTimeout((res) => {
-      playNextTrack(res);
-  }, timeRemaining);
+function setTrackTimeout(timeRemaining) {
+    console.log('SET TIMEOUT: ' + timeRemaining);
+    clearTimeout(trackTimeout);
+    trackTimeout = setTimeout(() => {
+        console.log('hi');
+        playNextTrack();
+    }, timeRemaining);
 }

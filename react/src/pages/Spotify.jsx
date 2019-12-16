@@ -1,171 +1,156 @@
 import React, { Component } from 'react';
-import { Form, FormControl, Button, Col, ListGroup, Image, Container, Row } from 'react-bootstrap';
-import SpotifyApiClient from '../clients/spotify-api-client';
+import { Col, Container, Row } from 'react-bootstrap';
+import spotifyApiClient from '../clients/spotify-api-client';
+import socketIOClient from "socket.io-client";
+import GetDevices from '../components/Spotify/GetDevices';
+import NextButton from '../components/Spotify/NextButton';
+import PlayPauseButton from '../components/Spotify/PlayPauseButton';
+import AddToQueueButton from '../components/Spotify/AddToQueueButton';
+import UserNameModal from '../components/Spotify/UserNameModal';
+import Queue from '../components/Spotify/Queue';
+import SearchResults from '../components/Spotify/SearchResults';
+import Search from '../components/Spotify/Search';
+import Users from '../components/Spotify/Users';
+import NowPlaying from '../components/Spotify/NowPlaying';
+
+const endpoint = "http://localhost:3001";
+const socket = socketIOClient(endpoint);
 
 class Spotify extends Component {
     constructor(props) {
         super(props);
 
         this.state = { 
-            query: '',
+            selectedItem: null,
+            queue: [],
             tracks: [],
             albums: [],
             playlists: [],
-            selectedListItem: {
-                type: '', // track, album, or playlist
-                id: -1
-            }
+            currentPlayback: '',
+            user: sessionStorage.getItem('user'),
         };
-
-        this.handleSearch = this.handleSearch.bind(this);
-        this.onItemClick = this.onItemClick.bind(this);
     }
 
-    handleSearch(e) {
-        e.preventDefault();
-        SpotifyApiClient.search(e.target.query.value, (response) => {
+    componentDidMount() {
+        if (this.state.user != null) {
+            socket.emit('new user', this.state.user);
+        }
+
+        socket.on('init queue', (queue) => {
+            this.setState({
+                queue: queue,
+            });
+        });
+        socket.on('init current playback', (spotifyObject) => {
+            this.setState({
+                currentPlayback: spotifyObject,
+            });
+        });
+
+        socket.on('add to queue', (queue) => {
+            this.setState({ queue: queue });
+            console.log('add to queue');
+        });
+        socket.on('next', (obj) => {
+            this.setState({ 
+                queue: obj.queue, 
+                currentPlayback: obj.currentPlayback
+            });
+            console.log('next track');
+        })
+    }
+
+    handleAddToQueue() {
+        if (this.state.selectedItem) {
+            socket.emit('add to queue', {
+                user: this.state.user,
+                spotifyObject: this.state.selectedItem,
+            });
+        }
+    }
+
+    handleSearch(query) {
+        spotifyApiClient.search(query, (response) => {
             this.setState({
                 tracks: response.tracks.items,
                 albums: response.albums.items,
                 playlists: response.playlists.items,
             });
-            console.log(this.state);
         });
     }
 
-    onItemClick = (type, id) => e => {
+    handleSelectItem(item) {
         this.setState({ 
-            selectedListItem: {
-                type: type,
-                id: id
-            }
+            selectedItem: item
         });
     }
 
-    renderSearchResults() {
-        let trackComponents = this.renderTracks();
-        let albumComponents = this.renderAlbums();
-        let playlistComponents = this.renderPlaylists();
-        return (
-            <div>
-                <Container>
-                    <Row>
-                        <Col>
-                            <div>Tracks</div>
-                            <ListGroup as='ul'>
-                                {trackComponents}
-                            </ListGroup>
-                        </Col>
-                        <Col>
-                            <div>Albums</div>
-                            <ListGroup as='ul'>
-                                {albumComponents}
-                            </ListGroup>
-                        </Col>
-                        <Col>
-                            <div>Playlists</div>
-                            <ListGroup as='ul'>
-                                {playlistComponents}
-                            </ListGroup>
-                        </Col>
-                    </Row>
-                </Container>
-            </div>
-        );
-    }
-
-    renderTracks() {
-        return this.state.tracks.map((track, i) => (
-            <ListGroup.Item 
-                as='li' 
-                key={i} 
-                className={(this.state.selectedListItem.type === track.type
-                    && this.state.selectedListItem.id === i) ? 'active' : ''}
-                onClick={this.onItemClick(track.type, i)}>
-                <Row>
-                    <Image className='spotify-img' src={track.album.images[track.album.images.length - 1].url} />
-                    <Col>
-                        <div className='spotify-item-title'>{track.name}</div>
-                        <div className='spotify-item-subtitle'>
-                            Song • {this.getArtists(track.artists)}
-                        </div>
-                    </Col>
-                </Row>
-            </ListGroup.Item>
-        ));
-    }
-
-    renderAlbums() {
-        return this.state.albums.map((album, i) => (
-            <ListGroup.Item 
-                as='li' 
-                key={i} 
-                className={(this.state.selectedListItem.type === album.type
-                    && this.state.selectedListItem.id === i) ? 'active' : ''}
-                onClick={this.onItemClick(album.type, i)}>
-                <Row>
-                    <Image className='spotify-img' src={album.images[album.images.length - 1].url} />
-                    <Col>
-                        <div className='spotify-item-title'>{album.name}</div>
-                        <div className='spotify-item-subtitle'>
-                            Album • {this.getArtists(album.artists)}
-                        </div>
-                    </Col>
-                </Row>
-            </ListGroup.Item>
-        ));
-    }
-
-    renderPlaylists() {
-        return this.state.playlists.map((playlist, i) => (
-            <ListGroup.Item 
-                as='li' 
-                key={i} 
-                className={(this.state.selectedListItem.type === playlist.type
-                    && this.state.selectedListItem.id === i) ? 'active' : ''}
-                onClick={this.onItemClick(playlist.type, i)}>
-                <Row>
-                    <Image className='spotify-img' src={playlist.images[playlist.images.length - 1].url} />
-                    <Col>
-                        <div className='spotify-item-title'>{playlist.name}</div>
-                        <div className='spotify-item-subtitle'>
-                            Playlist • {playlist.owner.display_name}
-                        </div>
-                    </Col>
-                </Row>
-            </ListGroup.Item>
-        ));
-    }
-
-    getArtists(artists) {
-        let result = artists[0].name;
-        for (let i = 1; i < artists.length; i++) {
-            result += ', ' + artists[i].name;
-        }
-        return result;
+    handleUserConnection(user) {
+        sessionStorage.setItem('user', user);
+        this.setState({
+            user: user,
+        });
     }
 
     render() {
-        let searchResults = this.renderSearchResults();
         return (
             <div>
-                <Form onSubmit={this.handleSearch}>
-                    <Form.Row>
-                        <Col>
-                            <FormControl 
-                                name='query'
-                                placeholder='Search songs, albums, or playlists...' />
-                        </Col>
-                        <Col>
-                            <Button 
-                                title='Search'
-                                type="submit">Search
-                            </Button>
-                        </Col>
-                    </Form.Row>
-                </Form>
+                <Search 
+                    onSubmit={(query) => this.handleSearch(query)}
+                />
 
-                {searchResults}
+                <Users
+                    socket={socket}
+                />
+                <UserNameModal 
+                    socket={socket} 
+                    users={this.state.users}  
+                    onSubmit={(user) => this.handleUserConnection(user)}
+                    show={this.state.user == null}
+                />
+                
+                <Container>
+                    <NowPlaying 
+                        socket={socket}
+                        currentPlayback={this.state.currentPlayback}
+                    />
+                    <Row>
+                        <Col>
+                            <AddToQueueButton 
+                                onClick={() => this.handleAddToQueue()}
+                            />
+                        </Col>
+                        <Col>
+                            <PlayPauseButton 
+                                socket={socket}
+                            />
+                        </Col>
+                        <Col>
+                            <NextButton 
+                                socket={socket}
+                            />
+                        </Col>
+                        <Col>
+                            <GetDevices 
+                                socket={socket}
+                            />
+                        </Col>
+                    </Row>
+                    <Queue 
+                        queue={this.state.queue}
+                        user={this.state.user}
+                        socket={socket}
+                    />
+                    
+                </Container>
+
+                <SearchResults 
+                    selectedItem={this.state.selectedItem}
+                    tracks={this.state.tracks}
+                    albums={this.state.albums}
+                    playlists={this.state.playlists}
+                    onSelectItem={(item) => this.handleSelectItem(item)}
+                />
             </div>
         );
     }

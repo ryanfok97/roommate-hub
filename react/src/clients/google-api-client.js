@@ -1,5 +1,5 @@
-async function listEvents(callback) {
-    const response = await fetch('http://localhost:3001/calendar/events', {
+function listEvents(callback) {
+    fetch('http://localhost:3001/calendar/events', {
         accept: 'application/json'
     })
     .then(checkStatus)
@@ -10,7 +10,7 @@ async function listEvents(callback) {
     });
 }
 
-async function parseJson(res) {
+function parseJson(res) {
     return res.json();
 }
 
