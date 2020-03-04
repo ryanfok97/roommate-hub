@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Client from '../client';
+import GoogleApiClient from '../clients/google-api-client';
 import CalendarEvent from '../components/CalendarEvent';
 
 class Calendar extends Component {
@@ -11,8 +11,8 @@ class Calendar extends Component {
         };
     }
 
-    async componentWillMount() {
-        await Client.listEvents((response) => {
+    componentWillMount() {
+        GoogleApiClient.listEvents((response) => {
             this.setState({
                 calendars: response
             });
@@ -20,8 +20,7 @@ class Calendar extends Component {
     }
 
     renderCalendar(calendar) {
-        let events;
-        events = calendar.events.map((event) => (
+        let events = calendar.events.map((event) => (
             <CalendarEvent event={event} />
         ));
         return (

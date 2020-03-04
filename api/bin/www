@@ -5,6 +5,7 @@
  */
 
 var app = require('../app');
+var adminApp = require('../adminApp');
 var debug = require('debug')('api:server');
 var http = require('http');
 
@@ -14,12 +15,55 @@ var http = require('http');
 
 var port = normalizePort(process.env.PORT || '3001');
 app.set('port', port);
+var adminPort = normalizePort(process.env.PORT || '3002');
+adminApp.set('port', adminPort);
 
 /**
  * Create HTTP server.
  */
 
 var server = http.createServer(app);
+var adminServer = http.createServer(adminApp);
+
+/**
+ * Setup Socket.IO on non-Admin server
+ */
+var spotifyAdminController = require('../controllers/spotify-admin-controller');
+const io = require('socket.io')(server);
+
+io.on('connection', (socket) => {
+  socket.on("disconnect", () => {
+    spotifyAdminController.socket.handleDisconnect(socket)
+  });
+
+  socket.on('new user', (user) => {
+    spotifyAdminController.socket.handleNewUser(socket, user);
+  });
+
+  socket.on('device change', (deviceId) => {
+    spotifyAdminController.socket.handleDeviceChange(socket, deviceId);
+  });
+
+  socket.on('add to queue', (obj) => {
+    spotifyAdminController.socket.handleAddToQueue(io, socket, obj);
+  });
+
+  socket.on('remove from queue', (index) => {
+    spotifyAdminController.socket.handleRemoveFromQueue(io, socket, index)
+  });
+
+  socket.on('resume', () => {
+    spotifyAdminController.socket.handleResume(io, socket)
+  });
+
+  socket.on('pause', () => {
+    spotifyAdminController.socket.handlePause(io, socket)
+  });
+
+  socket.on('next', () => {
+    spotifyAdminController.socket.handleNext(io, socket)
+  });
+});
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -28,6 +72,10 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+adminServer.listen(adminPort, 'localhost'); // only allow this computer access to adminServer
+adminServer.on('error', onError);
+adminServer.on('listening', onListening);
 
 /**
  * Normalize a port into a number, string, or false.

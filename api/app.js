@@ -3,10 +3,13 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var bodyParser = require('body-parser');
 
 var app = express();
 
-var calendarRoute = require('./controllers/calendar-api-controller');
+var calendarRoute = require('./routes/calendar-api-routes');
+var spotifyRoute = require('./routes/spotify-api-routes');
+
 var cors = require('cors');
 
 // view engine setup
@@ -17,13 +20,13 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true })); 
+// app.use(express.static(path.join(__dirname, 'public'))); // don't use homepage
 
-app.use(cors());
 
-app.get('/calendar/events', (req, res) => {
-  calendarRoute.listEvents(res);
-});
+app.use('/calendar', cors(), calendarRoute);
+app.use('/spotify', cors(), spotifyRoute);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
