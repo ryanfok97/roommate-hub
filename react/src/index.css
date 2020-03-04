@@ -1,8 +1,6 @@
 body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-        sans-serif;
+    font-family: 'Gayathri', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -13,17 +11,44 @@ code {
 }
 
 .app {
-    background: lightgray;
+    background: darkgray; /*rgb(50, 88, 40);*/
     height: 100vh;
-    text-align: center;
 }
 
-.in-out-button {
+.btn:focus, .btn.focus { box-shadow: none; }
+
+.btn-success, .btn-danger {
+    background-color: rgb(110, 110, 110);
+    border-color: rgb(80, 80, 80);
+}
+
+.in-out-btn-toggle.active { height: 4rem; }
+
+.in-out-btn-toggle {
+    border-radius: 0 0 .5rem .5rem !important;
+    font-size: 1.5rem;
+    height: fit-content;
+    margin: 0 .5rem !important;
     width: 100%;
 }
 
-.row {
-    margin-bottom: 1rem;
+.sticky-close {
+    position: absolute;
+    margin-right: .2rem;
+    right: 0;
+    top: 0;
+}
+
+.sticky-note {
+    background-color: rgb(255, 249, 171);
+    border-radius: 0;
+    width: 20%;
+    max-width: 100%;
+    -moz-box-shadow: 4px 4px 7px rgba(33,33,33,1);
+    -webkit-box-shadow: 4px 4px 7px rgba(33,33,33,.7);
+    box-shadow: 4px 4px 7px rgba(33,33,33,.7);
+    resize: both;
+    overflow: auto;
 }
 
 .spotify-img {
@@ -44,3 +69,54 @@ code {
     height: 30vh;
     overflow-y: scroll;
 }
+/* ::-webkit-scrollbar {
+    width: 15px;
+    background:lightgray;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,255,1);
+    border-radius: 15px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 15px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    background: rgb(80, 80, 80);
+}  */
+
+.sticky-note-title {
+    background-color: transparent;
+    border: none;
+    font-weight: bold;
+    margin: 0;
+    outline: none;
+    overflow: hidden;
+    padding: .1rem;
+    width: 100%;
+}
+
+.sticky-note-text {
+    background-color: transparent;
+    border: none;
+    cursor: text;
+    height: 80%;
+    outline: none;
+    padding: .1rem;
+    resize: none;
+    text-align: left;
+    transition: none;
+    width: 100%;
+}
+
+[contentEditable=true]:empty:not(focus):before {
+    content:attr(placeholder);
+    color: gray;
+}
+
+/* #dashboard-add-dropdown, .dashboard-add-dropdown {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: .5rem .5rem;
+} */

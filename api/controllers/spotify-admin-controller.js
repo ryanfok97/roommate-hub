@@ -3,15 +3,9 @@ var SpotifyWebApi = require('spotify-web-api-node');
 
 var trackTimeout;
 
-var credentials = {
-    clientId: '365de91bc43d485cbd5b268b96c6be2e', 
-    clientSecret: '96f07e8d7313410ea4a5bda15247880d', 
-    redirectUri:'http://localhost:3002/spotify/callback' 
-}
+var credentials = require('../credentials/spotify-api-credentials.json')
 
 var spotifyApi = new SpotifyWebApi(credentials);
-
-//const DEVICE_ID = '44e8e24be11f9884039272bacaf3672e15f2dd69';//'6ba22e6e31de058aa6014842317225574a3a8539';
 
 function callback(req, res) {
   // Get authorization code

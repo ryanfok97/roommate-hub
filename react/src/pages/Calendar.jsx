@@ -8,14 +8,14 @@ class Calendar extends Component {
 
         this.state = {
             calendars: []
-        }
+        };
     }
 
     componentWillMount() {
         GoogleApiClient.listEvents((response) => {
             this.setState({
                 calendars: response
-            })
+            });
         });
     }
 
