@@ -84,13 +84,12 @@ function playNextTrack() {
         const queueUris = serverData.queue.map((obj) => {
             return obj.track.uri;
         });
-        const next = serverData.next();
+        serverData.next();
         spotifyApi.play({
             'uris': queueUris, // use spotify queue functionality to play next track on track end
             'device_id': serverData.deviceId,
             "position_ms": 0
         })
-        // .then(setTrackTimeout(next.duration_ms))
         .catch((err) => {
             console.error(err);
             return;
@@ -104,11 +103,6 @@ function resume() {
         spotifyApi.play({
             'device_id': serverData.deviceId
         })
-        // .then(spotifyApi.getMyCurrentPlaybackState().then((currentlyPlaying) => {
-        //     // set track timeout
-        //     const timeRemaining = currentlyPlaying.body.item.duration_ms - currentlyPlaying.body.progress_ms;
-        //     setTrackTimeout(timeRemaining);
-        // }))
         .catch((err) => {
             console.error(err);
         });
@@ -121,8 +115,6 @@ function pause() {
         spotifyApi.pause({
             'device_id': serverData.deviceId
         })
-        // stop track timeout
-        .then(clearTimeout(trackTimeout))
         .catch((err) => {
             console.error(err);
         });
@@ -137,27 +129,132 @@ async function getDevices(res) {
     .catch((err) => {
         console.error(err);
         res.status(500).send("Error getting devices");
-    })
+    });
 }
 
-module.exports.callback = (req, res) => {
-    callback(req, res);
+/* SOCKET IO Functions */
+function handleResume(io, socket) {
+    if (!serverData.isPlaying) {
+        resume();
+        serverData.setIsPlaying(true);
+        spotifyApi.getMyCurrentPlaybackState().then((currentlyPlaying) => {
+            // set track timeout
+            const timeRemaining = currentlyPlaying.body.item.duration_ms - currentlyPlaying.body.progress_ms;
+            setTrackTimeout(timeRemaining, io);
+        });
+        io.emit('resume');
+        console.log('RESUME (' + socket.userName + ') successful');
+    } else {
+        console.log('RESUME (' + socket.userName + ') failed');
+    }
 }
 
-module.exports.playNextTrack = () => {
-    playNextTrack();
+function handlePause(io, socket) {
+    if (serverData.isPlaying) {
+        pause();
+        clearTimeout(trackTimeout);
+        serverData.setIsPlaying(false);
+        io.emit('pause');
+        console.log('PAUSE (' + socket.userName + ') successful');
+    } else {
+        console.log('PAUSE (' + socket.userName + ') failed');
+    }
 }
 
-module.exports.resume = () => {
-    resume();
+function handleNext(io, socket) {
+    if (serverData.hasNext()) {
+        playNextTrack();
+        serverData.setIsPlaying(true);
+        setTrackTimeout(serverData.lastPlayed.duration_ms, io);
+        io.emit('next', {
+            queue: serverData.queue.slice(),
+            currentPlayback: serverData.lastPlayed,
+        });
+        console.log('NEXT (' + socket.userName + ') successful');
+    } else {
+        console.log('NEXT (' + socket.userName + ') failed');
+    }
 }
 
-module.exports.pause = () => {
-    pause();
+function handleAddToQueue(io, socket, obj) {
+    serverData.addToQueue(obj)
+    .then(() => {
+        io.emit('add to queue', serverData.queue);
+        
+        console.log('ADD TO QUEUE (' + socket.userName + ') successful: ');
+        console.log('    User: ' + obj.user);
+        console.log('    Type: ' + obj.spotifyObject.type);
+        console.log('    Name: ' + obj.spotifyObject.name);
+        if (obj.spotifyObject.type === 'track' || obj.spotifyObject.type === 'album') {
+        const artists = obj.spotifyObject.artists.map((artist) => artist.name);
+        console.log('    Artist(s): ' + artists);
+        } else {
+        console.log('    Owner: ' + obj.spotifyObject.owner.display_name);
+        }
+    });
 }
 
-module.exports.getDevices = (res) => {
-    getDevices(res);
+function handleRemoveFromQueue(io, socket, index) {
+    const removed = serverData.removeFromQueue(index);
+    if (removed.length > 0) {
+        io.emit('remove from queue', serverData.queue);
+        console.log('REMOVE FROM QUEUE (' + socket.userName + ') successful: ');
+        console.log('    User: ' + removed[0].user);
+        console.log('    Name: ' + removed[0].track.name);
+        const artists = removed[0].track.artists.map((artist) => artist.name);
+        console.log('    Artist(s): ' + artists);
+    }
+}
+
+function handleDeviceChange(socket, deviceId) {
+    serverData.deviceId = deviceId;
+    socket.broadcast.emit('device change', deviceId);
+    console.log('DEVICE CHANGE (' + socket.userName + ') successful: ' + deviceId);
+}
+
+function handleNewUser(socket, user) {
+    socket.userName = user;
+    serverData.addUser(user);
+    socket.broadcast.emit('new user', user);
+
+    // initialize data
+    socket.emit('init device', serverData.deviceId);
+    socket.emit('init queue', serverData.queue);
+    socket.emit('init current status', serverData.isPlaying);
+    socket.emit('init current playback', serverData.lastPlayed);
+    socket.emit('init users', serverData.users);
+
+    console.log('NEW USER (' + user + ') successful: ' + serverData.users);
+}
+
+function handleDisconnect(socket) {
+    if (socket.userName) {
+        serverData.removeUser(socket.userName);
+        socket.broadcast.emit('remove user', socket.userName);
+        console.log('REMOVE USER (' + socket.userName + ') successful: ' + serverData.users);
+    } else {
+        console.log('REMOVE USER (' + socket.userName + ') failed');
+    }
+}
+
+module.exports = {
+    api: {
+        callback: (req, res) => callback(req, res),
+        playNextTrack: () => playNextTrack(),
+        resume: () => resume(),
+        pause: () => pause(),
+        getDevices: (res) => getDevices(res),
+    },
+    socket: {
+        handleResume: (io, socket) => handleResume(io, socket),
+        handlePause: (io, socket) => handlePause(io, socket),
+        handleNext: (io, socket) => handleNext(io, socket),
+        handleAddToQueue: (io, socket, obj) => handleAddToQueue(io, socket, obj),
+        handleRemoveFromQueue: (io, socket, index) => handleRemoveFromQueue(io, socket, index),
+        handleDeviceChange: (socket, deviceId) => handleDeviceChange(socket, deviceId),
+        handleNewUser: (socket, user) => handleNewUser(socket, user),
+        handleDisconnect: (socket) => handleDisconnect(socket),
+    }
 }
 
 /**************************************************
@@ -172,13 +269,20 @@ function getCurrentTrack() {
 
 /* 
  * Reset trackTimeout to given time (in ms)
- * trackTimeout calls playNextTrack() on timeout
+ * trackTimeout removes next song from queue on timeout
  */
-function setTrackTimeout(timeRemaining) {
-    console.log('SET TIMEOUT: ' + timeRemaining);
+function setTrackTimeout(timeRemaining, io) {
     clearTimeout(trackTimeout);
     trackTimeout = setTimeout(() => {
-        console.log('hi');
+        // const next = serverData.next();
+        // serverData.setIsPlaying(true);
+        // setTrackTimeout(next.duration_ms, io);
         playNextTrack();
+        io.emit('next', {
+            queue: serverData.queue.slice(),
+            currentPlayback: serverData.lastPlayed,
+        });
+        console.log("NEXT TRACK");
     }, timeRemaining);
+    console.log('SET TIMEOUT: ' + timeRemaining);
 }

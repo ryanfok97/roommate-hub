@@ -8,20 +8,8 @@ router.get('/search', (req, res) => {
     spotifyController.search(req, res);
 });
 
-router.put('/resume', (req, res) => {
-    spotifyAdminController.resume(res);
-});
-
-router.put('/pause', (req, res) => {
-    spotifyAdminController.pause(res);
-});
-
-router.put('/next', (req, res) => {
-    spotifyAdminController.playNextTrack(res);
-});
-
 router.get('/devices', (req, res) => {
-    spotifyAdminController.getDevices(res);
+    spotifyAdminController.api.getDevices(res);
 })
 
 module.exports = router;

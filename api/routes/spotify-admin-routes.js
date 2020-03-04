@@ -7,7 +7,7 @@ router.get('/login', (req, res) => {
 });
 
 router.get('/callback', (req, res) => {
-    spotifyAdminController.callback(req, res);
+    spotifyAdminController.api.callback(req, res);
 });
 
 // router.post('/scrub', (req, res) => {

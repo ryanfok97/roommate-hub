@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import { Row, Col, Container } from 'react-bootstrap';
+import { Container, Table, Button } from 'react-bootstrap';
 
 class Queue extends Component {
+    handleRemoveTrack(index) {
+        this.props.socket.emit('remove from queue', index);
+    }
+
     getArtists(artists) {
         let result = artists[0].name;
         for (let i = 1; i < artists.length; i++) {
@@ -12,31 +16,30 @@ class Queue extends Component {
 
     render() {
         const queue = this.props.queue.map((obj, i) => {
-            if (obj.track.type === "playlist") {
-                return <Row key={i}>
-                    <Col>{obj.user}</Col> 
-                    <Col>{obj.track.name}</Col>
-                    <Col>{obj.track.owner.display_name}</Col>
-                    <Col>{obj.track.type}</Col>
-                </Row>
-            } else {
-                return <Row key={i}>
-                    <Col>{obj.user}</Col>
-                    <Col>{obj.track.name}</Col>
-                    <Col>{this.getArtists(obj.track.artists)}</Col>
-                    <Col>{obj.track.type}</Col>
-                </Row>
-            }
+            return <tr key={i}>
+                <td><Button onClick={() => this.handleRemoveTrack(i)}>X</Button></td>
+                <td>{obj.user}</td>
+                <td>{obj.track.name}</td>
+                <td>{this.getArtists(obj.track.artists)}</td>
+                <td>{obj.track.type}</td>
+            </tr>
         });
         return (
-            <Container>
-                <Row key='header'>
-                    <Col>User</Col>
-                    <Col>Name</Col>
-                    <Col>Artist(s)</Col>
-                    <Col>Type</Col>
-                </Row>
-                {queue}
+            <Container className='queue'>
+                <Table>
+                    <thead key='header'>
+                        <tr>
+                            <th></th>
+                            <th>User</th>
+                            <th>Name</th>
+                            <th>Artist(s)</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {queue}
+                    </tbody>
+                </Table>
             </Container>
         )
     }

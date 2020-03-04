@@ -50,7 +50,12 @@ class Spotify extends Component {
         socket.on('add to queue', (queue) => {
             this.setState({ queue: queue });
             console.log('add to queue');
+            console.log(queue);
         });
+        socket.on('remove from queue', (queue) => {
+            this.setState({ queue: queue });
+            console.log('remove from queue');
+        })
         socket.on('next', (obj) => {
             this.setState({ 
                 queue: obj.queue, 

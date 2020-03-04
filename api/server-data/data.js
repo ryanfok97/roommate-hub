@@ -23,7 +23,7 @@ class Data {
                 this.queue.push(...toAdd);
                 break;
             case 'playlist':
-                const playlistTracks = await spotifyApi.getPlaylistTracks(spotifyObject.id);
+                const playlistTracks = await spotifyApi.getPlaylistTracks(obj.spotifyObject.id);
                 toAdd = playlistTracks.body.items.map((track) => {
                     return {
                         user: obj.user,
@@ -35,9 +35,15 @@ class Data {
         }
     }
 
+    static removeFromQueue(index) {
+        return this.queue.splice(index, 1);
+    }
+
     static next() {
-        this.lastPlayed = this.queue.shift().track;
-        return this.lastPlayed;
+        if (this.hasNext()) {
+            this.lastPlayed = this.queue.shift().track;
+            return this.lastPlayed;
+        }
     }
 
     static hasNext() {

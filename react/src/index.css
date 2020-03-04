@@ -39,3 +39,8 @@ code {
     color: gray;
     font-size: 0.8rem;
 }
+
+.queue {
+    height: 30vh;
+    overflow-y: scroll;
+}
