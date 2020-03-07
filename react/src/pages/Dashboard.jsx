@@ -6,6 +6,7 @@ import AddRoommateModal from '../components/AddRoommateModal';
 import RemoveRoommateModal from '../components/RemoveRoommateModal';
 import StickyNoteWall from '../components/StickyNoteWall';
 import InOutButtons from '../components/InOutButtons';
+import socketIOClient from "socket.io-client";
 
 class Dashboard extends Component {
     constructor(props) {
@@ -20,6 +21,24 @@ class Dashboard extends Component {
         this.handleChangeAddRoommateModal = this.handleChangeAddRoommateModal.bind(this);
         this.handleAddRoommate = this.handleAddRoommate.bind(this);
         this.handleRemoveRoommate = this.handleRemoveRoommate.bind(this);
+    }
+
+    componentDidMount() {
+        this.props.socket.on('add roommate', (roommate) => {
+
+        });
+
+        this.props.socket.on('remove roommate', (roommate) => {
+
+        });
+
+        this.props.socket.on('add sticky note', (note) => {
+
+        });
+
+        this.props.socket.on('delete sticky note', (note) => {
+
+        });
     }
 
     handleChangeAddRoommateModal(e) {
@@ -73,7 +92,8 @@ class Dashboard extends Component {
                     handleShowAddModal={() => this.setState({addModalShow: true})}
                     handleShowRemoveModal={(name, e) => this.handleShowRemoveModal(name, e)}
                 />
-                <StickyNoteWall />
+                <StickyNoteWall 
+                    socket={this.props.socket} />
 
                 <Button as={Link} to='/calendar'>Calendar</Button>
 

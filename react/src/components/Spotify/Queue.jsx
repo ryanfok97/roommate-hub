@@ -2,10 +2,6 @@ import React, { Component } from 'react';
 import { Container, Table, Button } from 'react-bootstrap';
 
 class Queue extends Component {
-    handleRemoveTrack(index) {
-        this.props.socket.emit('remove from queue', index);
-    }
-
     getArtists(artists) {
         let result = artists[0].name;
         for (let i = 1; i < artists.length; i++) {
@@ -17,11 +13,11 @@ class Queue extends Component {
     render() {
         const queue = this.props.queue.map((obj, i) => {
             return <tr key={i}>
-                <td><Button onClick={() => this.handleRemoveTrack(i)}>X</Button></td>
+                <td><Button onClick={() => this.props.onClick(i)}>X</Button></td>
                 <td>{obj.user}</td>
-                <td>{obj.track.name}</td>
-                <td>{this.getArtists(obj.track.artists)}</td>
-                <td>{obj.track.type}</td>
+                <td>{obj.spotifyObject.name}</td>
+                <td>{this.getArtists(obj.spotifyObject.artists)}</td>
+                <td>{obj.spotifyObject.type}</td>
             </tr>
         });
         return (

@@ -29,39 +29,88 @@ var adminServer = http.createServer(adminApp);
  * Setup Socket.IO on non-Admin server
  */
 var spotifyAdminController = require('../controllers/spotify-admin-controller');
+var stickyNoteController = require('../controllers/sticky-note-controller');
 const io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
   socket.on("disconnect", () => {
-    spotifyAdminController.socket.handleDisconnect(socket)
+    if (socket.userName) {
+      spotifyAdminController.socket.handleDisconnect(socket.userName);
+      socket.broadcast.emit('spotify remove user', socket.userName);
+    }
   });
 
-  socket.on('new user', (user) => {
-    spotifyAdminController.socket.handleNewUser(socket, user);
+  /********************
+   * SPOTIFY          *
+   ********************/
+  socket.on('spotify login', (user) => {
+    socket.userName = user;
+    spotifyAdminController.socket.handleNewUser(socket);
+
+    // confirm user login successful
+    socket.emit('spotify login');
+
+    // emit new user to all other users
+    socket.broadcast.emit('spotify new user', user);
   });
 
-  socket.on('device change', (deviceId) => {
-    spotifyAdminController.socket.handleDeviceChange(socket, deviceId);
+  socket.on('spotify device change', (deviceId) => {
+    spotifyAdminController.socket.handleDeviceChange(socket.userName, deviceId);
+    socket.broadcast.emit('spotify device change', deviceId);
   });
 
-  socket.on('add to queue', (obj) => {
-    spotifyAdminController.socket.handleAddToQueue(io, socket, obj);
+  socket.on('spotify add to queue', (obj) => {
+    spotifyAdminController.socket.handleAddToQueue(obj);
+    socket.broadcast.emit('spotify add to queue', obj);
   });
 
-  socket.on('remove from queue', (index) => {
-    spotifyAdminController.socket.handleRemoveFromQueue(io, socket, index)
+  socket.on('spotify remove from queue', (index) => {
+    spotifyAdminController.socket.handleRemoveFromQueue(index);
+    socket.broadcast.emit('spotify remove from queue', index);
   });
 
-  socket.on('resume', () => {
-    spotifyAdminController.socket.handleResume(io, socket)
+  socket.on('spotify resume', () => {
+    spotifyAdminController.socket.handleResume(socket.userName);
+    socket.broadcast.emit('spotify resume');
   });
 
-  socket.on('pause', () => {
-    spotifyAdminController.socket.handlePause(io, socket)
+  socket.on('spotify pause', () => {
+    spotifyAdminController.socket.handlePause(socket.userName);
+    socket.broadcast.emit('spotify pause');
   });
 
-  socket.on('next', () => {
-    spotifyAdminController.socket.handleNext(io, socket)
+  socket.on('spotify next', () => {
+    spotifyAdminController.socket.handleNext(socket.userName, io);
+    socket.broadcast.emit('spotify next');
+  });
+
+  /********************
+   * STICKY NOTE      *
+   ********************/
+  socket.on('sticky note add', (newNote) => {
+    stickyNoteController.handleAddStickyNote();
+    socket.broadcast.emit('sticky note add');
+  });
+
+  socket.on('sticky note delete', (note) => {
+    stickyNoteController.handleDeleteStickyNote(note);
+    socket.broadcast.emit('sticky note delete', note);
+  });
+
+  socket.on('sticky note edit title', ({note, title}) => {
+    stickyNoteController.handleEditStickyNoteTitle(note, title);
+    socket.broadcast.emit('sticky note edit title', {
+      note: note,
+      title: title
+    });
+  });
+
+  socket.on('sticky note edit text', ({note, text}) => {
+    stickyNoteController.handleEditStickyNoteText(note, text);
+    socket.broadcast.emit('sticky note edit text', {
+      note: note,
+      text: text
+    });
   });
 });
 

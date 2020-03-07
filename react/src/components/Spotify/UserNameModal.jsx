@@ -24,8 +24,10 @@ class UserNameModal extends Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        if (this.state.input) {
-            this.props.socket.emit('new user', this.state.input);
+        if (!this.props.socket.connected) {
+            console.err('new user failed, not connected to socket');
+        } else if (this.props.socket.connected && this.state.input) {
+            this.props.socket.emit('spotify new user', this.state.input);
             this.props.onSubmit(this.state.input);
             this.setState({
                 validated: true,

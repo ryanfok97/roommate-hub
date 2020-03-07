@@ -13,14 +13,19 @@ class GetDevices extends Component {
     }
 
     componentDidMount() {
-        this.props.socket.on('init device', (deviceId) => {
+        this.props.socket.on('spotify init device', (deviceId) => {
             this.setState({ selectedDevice: deviceId });
             console.log('Selected device initialized.');
         });
-        this.props.socket.on('device change', (deviceId) => {
+        this.props.socket.on('spotify device change', (deviceId) => {
             this.setState({ selectedDevice: deviceId });
             console.log('Received device change: ' + deviceId);
         });
+    }
+
+    componentWillUnmount() {
+        this.props.socket.off('spotify init device');
+        this.props.socket.off('spotify device change');
     }
 
     handleGetDevices() {
@@ -31,9 +36,13 @@ class GetDevices extends Component {
     }
 
     handleDeviceSelect(deviceId) {
-        console.log('select device');
-        this.setState({ selectedDevice: deviceId });
-        this.props.socket.emit('device change', deviceId);
+        if (!this.props.connected) {
+            console.err('select device failed, not connected to socket');
+        } else {
+            console.log('select device');
+            this.setState({ selectedDevice: deviceId });
+            this.props.socket.emit('spotify device change', deviceId);
+        }
     }
 
     render() {

@@ -8,7 +8,22 @@ import {
 import Spotify from './pages/Spotify';
 import Calendar from './pages/Calendar';
 import Dashboard from './pages/Dashboard';
+import socketIOClient from "socket.io-client";
 import './App.css';
+
+const endpoint = "http://192.168.0.103:3001";
+const socket = socketIOClient(endpoint);
+
+// socket.on('disconnect', () => {
+//     console.log('disconnected from socket');
+
+//     connected = false;
+//     // reconnectInterval = setInterval(handleReconnect(), 5000)
+// });
+
+// const handleReconnect = () => {
+//     socket.connect();
+// }
 
 function App() {
     return (
@@ -16,13 +31,13 @@ function App() {
             <div>
                 <Switch>
                     <Route path='/spotify'>
-                        <Spotify />
+                        <Spotify socket={socket} />
                     </Route>
                     <Route path='/calendar'>
                         <Calendar />
                     </Route>
                     <Route path='/'>
-                        <Dashboard />
+                        <Dashboard socket={socket} />
                     </Route>
                 </Switch>
             </div>

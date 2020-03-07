@@ -14,8 +14,8 @@ class StickyNote extends Component {
                     <button className='sticky-close close' onClick={(e) => this.props.handleDeleteStickyNote(this.props.idx, e)}>
                         <span aria-hidden='true'>&times;</span>
                     </button>
-                    <Card.Title as='input' className='sticky-note-title h5' placeholder='Untitled' />
-                    <Card.Text contentEditable className='sticky-note-text' placeholder="What's your passive aggressive message?" />
+                    <Card.Title as='input' value={this.props.title} className='sticky-note-title h5' placeholder='Untitled' onChange={(e) => this.props.handleEditStickyNoteTitle(this.props.idx, e)} />
+                    <Card.Text as='input' value={this.props.text} contentEditable className='sticky-note-text' placeholder="What's your passive aggressive message?" onChange={(e) => this.props.handleEditStickyNoteText(this.props.idx, e)} />
                 </Card.Body>
             </Card>
         );
