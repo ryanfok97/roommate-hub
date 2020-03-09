@@ -32,9 +32,11 @@ class Spotify extends Component {
     componentDidMount() {
         if (!this.state.connected && this.state.user) {
             this.props.socket.emit('spotify login', this.state.user);
-            console.log('attempting login');
+            console.log('attempting spotify login');
         }
 
+        // TODO: possibly move this to App.js or some global place so I don't
+        //       have to repeat code.
         this.props.socket.on('disconnect', () => {
             this.setState({
                 connected: false
@@ -46,7 +48,7 @@ class Spotify extends Component {
             this.setState({
                 connected: true
             });
-            console.log('login successful');
+            console.log('spotify login successful');
         });
 
         this.props.socket.on('spotify init users', (users) => {

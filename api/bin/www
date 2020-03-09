@@ -28,8 +28,9 @@ var adminServer = http.createServer(adminApp);
 /**
  * Setup Socket.IO on non-Admin server
  */
-var spotifyAdminController = require('../controllers/spotify-admin-controller');
-var stickyNoteController = require('../controllers/sticky-note-controller');
+const spotifyAdminController = require('../controllers/spotify-admin-controller');
+const stickyNoteController = require('../controllers/sticky-note-controller');
+const roommatesController = require('../controllers/roommates-controller'); 
 const io = require('socket.io')(server);
 
 io.on('connection', (socket) => {
@@ -85,8 +86,38 @@ io.on('connection', (socket) => {
   });
 
   /********************
-   * STICKY NOTE      *
+   * DASHBOARD        *
    ********************/
+  socket.on('dashboard login', () => {
+    socket.emit('dashboard login');
+    socket.emit('roommates init', roommatesController.getRoommates());
+    socket.emit('sticky note init', stickyNoteController.getStickyNotes());
+  });
+
+  /*
+   * ROOMMATES
+   */
+  socket.on('roommates add', (newRoommate) => {
+    roommatesController.handleAddRoommate(newRoommate);
+    socket.broadcast.emit('roommates add', newRoommate);
+  });
+
+  socket.on('roommates remove', (index) => {
+    roommatesController.handleRemoveRoommate(index);
+    socket.broadcast.emit('roommates remove', index);
+  });
+
+  socket.on('roommates in out button change', ({index, value}) => {
+    roommatesController.handleInOutButtonChange(index, value);
+    socket.broadcast.emit('roommates in out button change', {
+      index: index,
+      value: value
+    });
+  });
+
+  /*
+   * STICKY NOTE
+   */
   socket.on('sticky note add', (newNote) => {
     stickyNoteController.handleAddStickyNote();
     socket.broadcast.emit('sticky note add');

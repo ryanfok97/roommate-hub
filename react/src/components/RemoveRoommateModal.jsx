@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Modal } from 'react-bootstrap';
 
-class AddRoommateModal extends Component {
+class RemoveRoommateModal extends Component {
     render() {
         return (
             <Modal show={this.props.show} onHide={this.props.onHide} centered>
@@ -20,4 +20,4 @@ class AddRoommateModal extends Component {
     }
 }
 
-export default AddRoommateModal;
+export default RemoveRoommateModal;

@@ -14,6 +14,13 @@ class StickyNoteWall extends Component {
     }
 
     componentDidMount() {
+        this.props.socket.on('sticky note init', (notes) => {
+            this.setState({
+                notes: notes
+            });
+            console.log('initialized sticky notes');
+        });
+
         this.props.socket.on('sticky note add', () => {
             let notesCopy = this.state.notes;
             notesCopy.push({

@@ -6,21 +6,11 @@ import { Button, Col,
          ToggleButton } from 'react-bootstrap';
 
 class InOutButton extends Component {
-    constructor(props) {
-        super(props);
+    // constructor(props) {
+    //     super(props);
 
-        this.state = {
-            value: 1
-        };
-
-        this.handleChange = this.handleChange.bind(this);
-    }
-
-    handleChange(val) {
-        this.setState({
-            value: val
-        });
-    }
+    //     this.handleChange = this.handleChange.bind(this);
+    // }
 
     render() {
         return (
@@ -42,8 +32,8 @@ class InOutButton extends Component {
                             className='w-75 btn-group-justified'
                             name={this.props.name} 
                             defaultValue={1}
-                            onChange={this.handleChange}
-                            value={this.state.value}
+                            onChange={(value) => this.props.handleChange(value)}
+                            value={this.props.value}
                         >
                             <ToggleButton value={1} variant='success' className='in-out-btn-toggle'>
                                 In

@@ -82,6 +82,49 @@ Data.removeUser = (user) => {
 /********************
  * STICKY NOTE      *
  ********************/
+Data.roommates = [
+    {
+        name: 'Brandon',
+        value: 1
+    },
+    {
+        name: 'Kadison',
+        value: 1
+    },
+    {
+        name: 'Ryan',
+        value: 1
+    },
+    {
+        name: 'Steven',
+        value: 1
+    }
+];
+
+Data.addRoommate = (newRoommate) => {
+    Data.roommates.push(newRoommate);
+    Data.roommates.sort((a, b) => {
+        if (a.name < b.name) {
+            return -1;
+        } else if (a.name > b.name) {
+            return 1;
+        } else {
+            return 0;
+        }
+    });
+}
+
+Data.removeRoommate = (index) => {
+    Data.roommates.splice(index, 1);
+}
+
+Data.changeInOutValue = (index, value) => {
+    Data.roommates[index].value = value;
+}
+
+/********************
+ * STICKY NOTE      *
+ ********************/
 Data.notes = [];
 
 Data.addStickyNote = () => {
@@ -117,13 +160,19 @@ module.exports = {
         lastPlayed: () => Data.lastPlayed(),
         setIsPlaying: (isPlaying) => Data.setIsPlaying(isPlaying),
         addUser: (user) => Data.addUser(user),
-        removeUser: (user) => Data.removeUser(user),
+        removeUser: (user) => Data.removeUser(user)
     },
     stickyNote: {
         notes: Data.notes,
         addStickyNote: () => Data.addStickyNote(),
         deleteStickyNote: (note) => Data.deleteStickyNote(note),
         editStickyNoteTitle: (note, title) => Data.editStickyNoteTitle(note, title),
-        editStickyNoteText: (note, text) => Data.editStickyNoteText(note, text),
+        editStickyNoteText: (note, text) => Data.editStickyNoteText(note, text)
+    },
+    roommates: {
+        roommates: Data.roommates,
+        addRoommate: (newRoommate) => Data.addRoommate(newRoommate),
+        removeRoommate: (index) => Data.removeRoommate(index),
+        changeInOutValue: (index, value) => Data.changeInOutValue(index, value)
     }
 };
