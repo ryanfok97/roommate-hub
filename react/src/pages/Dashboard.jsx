@@ -168,6 +168,7 @@ class Dashboard extends Component {
                     socket={this.props.socket} />
 
                 <Button as={Link} to='/calendar'>Calendar</Button>
+                <Button as={Link} to='/spotify'>Spotify</Button>
 
                 <AddRoommateModal 
                     show={this.state.addModalShow}

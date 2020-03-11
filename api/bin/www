@@ -91,7 +91,10 @@ io.on('connection', (socket) => {
   socket.on('dashboard login', () => {
     socket.emit('dashboard login');
     socket.emit('roommates init', roommatesController.getRoommates());
-    socket.emit('sticky note init', stickyNoteController.getStickyNotes());
+    socket.emit('sticky note init', {
+      notes: stickyNoteController.getStickyNotes(),
+      layouts: stickyNoteController.getLayouts()
+    });
   });
 
   /*
@@ -118,28 +121,33 @@ io.on('connection', (socket) => {
   /*
    * STICKY NOTE
    */
-  socket.on('sticky note add', (newNote) => {
-    stickyNoteController.handleAddStickyNote();
-    socket.broadcast.emit('sticky note add');
+  socket.on('sticky note layout change', (layouts) => {
+    stickyNoteController.handleLayoutChange(layouts);
+    socket.broadcast.emit('sticky note layout change', layouts);
   });
 
-  socket.on('sticky note delete', (note) => {
-    stickyNoteController.handleDeleteStickyNote(note);
-    socket.broadcast.emit('sticky note delete', note);
+  socket.on('sticky note add', ({i, count}) => {
+    stickyNoteController.handleAddStickyNote(i);
+    socket.broadcast.emit('sticky note add', {i, count});
   });
 
-  socket.on('sticky note edit title', ({note, title}) => {
-    stickyNoteController.handleEditStickyNoteTitle(note, title);
+  socket.on('sticky note delete', (index) => {
+    stickyNoteController.handleDeleteStickyNote(index);
+    socket.broadcast.emit('sticky note delete', index);
+  });
+
+  socket.on('sticky note edit title', ({index, title}) => {
+    stickyNoteController.handleEditStickyNoteTitle(index, title);
     socket.broadcast.emit('sticky note edit title', {
-      note: note,
+      index: index,
       title: title
     });
   });
 
-  socket.on('sticky note edit text', ({note, text}) => {
-    stickyNoteController.handleEditStickyNoteText(note, text);
+  socket.on('sticky note edit text', ({index, text}) => {
+    stickyNoteController.handleEditStickyNoteText(index, text);
     socket.broadcast.emit('sticky note edit text', {
-      note: note,
+      index: index,
       text: text
     });
   });

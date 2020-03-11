@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var spotifyApi = require('../controllers/spotify-api-controller');
 
 class Data {}
@@ -80,7 +81,7 @@ Data.removeUser = (user) => {
 }
 
 /********************
- * STICKY NOTE      *
+ * ROOMMATES        *
  ********************/
 Data.roommates = [
     {
@@ -125,13 +126,21 @@ Data.changeInOutValue = (index, value) => {
 /********************
  * STICKY NOTE      *
  ********************/
+Data.layouts = {}
 Data.notes = [];
 
-Data.addStickyNote = () => {
+Data.addStickyNote = (i) => {
     Data.notes.push({
-        title: '',
-        text: '',
+        i: i,
+        x: 0,
+        y: 0,
+        w: 2,
+        h: 4
     });
+}
+
+Data.changeLayouts = (layouts) => {
+    _.merge(Data.layouts, layouts);
 }
 
 Data.deleteStickyNote = (note) => {
@@ -164,7 +173,9 @@ module.exports = {
     },
     stickyNote: {
         notes: Data.notes,
-        addStickyNote: () => Data.addStickyNote(),
+        layouts: Data.layouts,
+        addStickyNote: (i) => Data.addStickyNote(i),
+        changeLayouts: (layouts) => Data.changeLayouts(layouts),
         deleteStickyNote: (note) => Data.deleteStickyNote(note),
         editStickyNoteTitle: (note, title) => Data.editStickyNoteTitle(note, title),
         editStickyNoteText: (note, text) => Data.editStickyNoteText(note, text)

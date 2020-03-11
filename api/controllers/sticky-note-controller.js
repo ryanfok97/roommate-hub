@@ -4,8 +4,16 @@ const getStickyNotes = () => {
     return serverData.stickyNote.notes;
 }
 
-const handleAddStickyNote = () => {
-    serverData.stickyNote.addStickyNote();
+const getLayouts = () => {
+    return serverData.stickyNote.layouts;
+}
+
+const handleLayoutChange = (layouts) => {
+    serverData.stickyNote.changeLayouts(layouts);
+}
+
+const handleAddStickyNote = (i) => {
+    serverData.stickyNote.addStickyNote(i);
 }
 
 const handleDeleteStickyNote = (note) => {
@@ -23,7 +31,9 @@ const handleEditStickyNoteText = (note, text) => {
 
 module.exports = {
     getStickyNotes: () => getStickyNotes(),
-    handleAddStickyNote: () => handleAddStickyNote(),
+    getLayouts: () => getLayouts(),
+    handleLayoutChange: (layouts) => handleLayoutChange(layouts),
+    handleAddStickyNote: (i) => handleAddStickyNote(i),
     handleDeleteStickyNote: (note) => handleDeleteStickyNote(note),
     handleEditStickyNoteTitle: (note, title) => handleEditStickyNoteTitle(note, title),
     handleEditStickyNoteText: (note, text) => handleEditStickyNoteText(note, text)

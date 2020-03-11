@@ -11,7 +11,7 @@ import Dashboard from './pages/Dashboard';
 import socketIOClient from "socket.io-client";
 import './App.css';
 
-const endpoint = "http://localhost:3001";
+const endpoint = "http://192.168.1.22:3001";
 const socket = socketIOClient(endpoint);
 
 // socket.on('disconnect', () => {

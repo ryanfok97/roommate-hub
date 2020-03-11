@@ -1,56 +1,77 @@
 import React, { Component } from 'react';
-import { Button, Card, Container } from 'react-bootstrap';
+import { Button, Card, Container, Row, Col } from 'react-bootstrap';
 import StickyNote from './StickyNote';
+import { WidthProvider, Responsive } from 'react-grid-layout';
+import _ from 'lodash';
+
+const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 class StickyNoteWall extends Component {
+    static defaultProps = {
+        className: 'layout',
+        cols: { lg: 12, md: 10, sm: 6, xs: 4, xxs: 2},
+        rowHeight: 30,
+        // verticalCompact: false
+    }
+
     constructor(props) {
         super(props);
 
         this.state = {
-            notes: []
+            notes: [],
+            count: 0
         };
 
         this.handleAddStickyNote = this.handleAddStickyNote.bind(this);
     }
 
     componentDidMount() {
-        this.props.socket.on('sticky note init', (notes) => {
+        this.props.socket.on('sticky note init', ({notes, layouts}) => {
             this.setState({
-                notes: notes
+                notes: notes,
+                layouts: layouts
             });
             console.log('initialized sticky notes');
         });
 
-        this.props.socket.on('sticky note add', () => {
-            let notesCopy = this.state.notes;
-            notesCopy.push({
-                title: '',
-                text: '',
-            });
+        this.props.socket.on('sticky note layout change', (layouts) => {
             this.setState({
-                notes: notesCopy
-            })
-        });
-
-        this.props.socket.on('sticky note delete', (note) => {
-            let notesCopy = this.state.notes;
-            notesCopy.splice(note, 1);
-            this.setState({
-                notes: notesCopy
+                layouts: layouts
             });
         });
 
-        this.props.socket.on('sticky note edit title', ({note, title}) => {
+        this.props.socket.on('sticky note add', ({i, count}) => {
+            this.setState({
+                notes: this.state.notes.concat({
+                    i: i,
+                    x: 0,
+                    y: 0,
+                    w: 2,
+                    h: 4
+                }),
+                count: count
+            });
+        });
+
+        this.props.socket.on('sticky note delete', (index) => {
             let notesCopy = this.state.notes;
-            notesCopy[note].title = title;
+            notesCopy.splice(index, 1);
             this.setState({
                 notes: notesCopy
             });
         });
 
-        this.props.socket.on('sticky note edit text', ({note, text}) => {
+        this.props.socket.on('sticky note edit title', ({index, title}) => {
             let notesCopy = this.state.notes;
-            notesCopy[note].text = text;
+            notesCopy[index].title = title;
+            this.setState({
+                notes: notesCopy
+            });
+        });
+
+        this.props.socket.on('sticky note edit text', ({index, text}) => {
+            let notesCopy = this.state.notes;
+            notesCopy[index].text = text;
             this.setState({
                 notes: notesCopy
             });
@@ -64,70 +85,99 @@ class StickyNoteWall extends Component {
         this.props.socket.off('sticky note edit text');
     }
 
+    createStickyNote(note) {
+        return (
+            <div key={note.i} data-grid={note}>
+                <StickyNote 
+                    title={note.title ? note.title : ''}
+                    text={note.text ? note.text : ''}
+                    idx={note.i}
+                    handleDeleteStickyNote={(index) => this.handleDeleteStickyNote(index)}
+                    handleEditStickyNoteTitle={(index, e) => this.handleEditStickyNoteTitle(index, e)}
+                    handleEditStickyNoteText={(index, e) => this.handleEditStickyNoteText(index, e)} />
+            </div>
+        )
+    }
+
     handleAddStickyNote() {
-        let notesCopy = this.state.notes;
-        notesCopy.push({
-            title: '',
-            text: '',
-        });
+        const note = {
+            i: this.state.count.toString(),
+            x: 0,
+            y: 0,
+            w: 2,
+            h: 4
+        }
         this.setState({
-            notes: notesCopy
+            notes: this.state.notes.concat(note),
+            count: this.state.count + 1
         });
-        this.props.socket.emit('sticky note add');
+        this.props.socket.emit('sticky note add', {
+            i: note.i,
+            count: this.state.count
+        });
         console.log('Added note');
     }
 
-    handleDeleteStickyNote(note, e) {
-        let notesCopy = this.state.notes;
-        notesCopy.splice(note, 1);
+    handleDeleteStickyNote(index) {
         this.setState({
-            notes: notesCopy
+            notes: _.reject(this.state.notes, {i: index.toString()})
         });
-        this.props.socket.emit('sticky note delete', note);
-        console.log('Removed note ' + note);
+        this.props.socket.emit('sticky note delete', index);
+        console.log('Removed note ' + index);
     }
 
-    handleEditStickyNoteTitle(note, e) {
+    handleEditStickyNoteTitle(index, e) {
         let notesCopy = this.state.notes;
-        notesCopy[note].title = e.target.value;
+        notesCopy[index].title = e.target.value;
         this.setState({
             notes: notesCopy
         });
         this.props.socket.emit('sticky note edit title', {
-            note: note,
+            index: index,
             title: e.target.value,
         });
-        console.log('Edited note ' + note + ' title to "' + e.target.value + '"');
+        console.log('Edited note ' + index + ' title to "' + e.target.value + '"');
     }
 
-    handleEditStickyNoteText(note, e) {
+    handleEditStickyNoteText(index, e) {
         let notesCopy = this.state.notes;
-        notesCopy[note].text = e.target.value;
+        notesCopy[index].text = e.target.value
         this.setState({
             notes: notesCopy
         });
         this.props.socket.emit('sticky note edit text', {
-            note: note,
+            index: index,
             text: e.target.value,
         });
-        console.log('Edited note ' + note + ' text to "' + e.target.value + '"');
+        console.log('Edited note ' + index + ' text to "' + e.target.value + '"');
+    }
+
+    handleLayoutChange(layout, layouts) {
+        this.setState({ 
+            layouts: layouts 
+        });
+        this.props.socket.emit('sticky note layout change', layouts);
     }
 
     render() {
-        const notes = this.state.notes.map((note, i) => 
-            <StickyNote key={i} idx={i}
-                title={note.title}
-                text={note.text}
-                handleDeleteStickyNote={(note, e) => this.handleDeleteStickyNote(note, e)}
-                handleEditStickyNoteTitle={(note, e) => this.handleEditStickyNoteTitle(note, e)}
-                handleEditStickyNoteText={(note, e) => this.handleEditStickyNoteText(note, e)} />
-        );
-
         return (
-            <Container fluid className='my-3 text-center d-flex justify-content-around'>
-                {notes}
-                <Button as={Card} style={{fontSize: '2rem', overflow: 'visible', resize: 'none'}} 
-                    className='sticky-note p-0 bg-transparent text-dark' onClick={() => this.handleAddStickyNote()}>+</Button>
+            <Container fluid>
+                <Button 
+                    as={Card} 
+                    style={{fontSize: '2rem', overflow: 'visible', resize: 'none'}} 
+                    className='sticky-note p-0 bg-transparent text-dark' 
+                    onClick={() => this.handleAddStickyNote()}
+                >
+                    +
+                </Button>
+                <ResponsiveReactGridLayout
+                    onLayoutChange={(layout, layouts) => this.handleLayoutChange(layout, layouts)}
+                    {...this.props}
+                    draggableCancel='.disable-drag'
+                    layouts={this.state.layouts}
+                >
+                    {this.state.notes.map((note) => this.createStickyNote(note))}
+                </ResponsiveReactGridLayout>
             </Container>
         );
     }
