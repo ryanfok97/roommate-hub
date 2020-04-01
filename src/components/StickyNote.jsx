@@ -14,7 +14,8 @@ const theme = createMuiTheme({
     MuiTextField: {
       root: {
         '&.description': {
-          'overflow-y': 'auto'
+          'overflow-y': 'auto',
+          height: '100%'
         }
       }
     },
