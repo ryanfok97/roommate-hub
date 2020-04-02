@@ -4,8 +4,6 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import BackIcon from '@material-ui/icons/NavigateBefore';
 import ForwardIcon from '@material-ui/icons/NavigateNext';
 
-var moment = require('moment');
-
 const theme = createMuiTheme({
   palette: {
     primary: {
@@ -34,10 +32,6 @@ const theme = createMuiTheme({
 });
 
 class CalendarHeader extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (
       <ThemeProvider theme={theme} >

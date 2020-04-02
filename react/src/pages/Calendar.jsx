@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ThemeProvider, Typography, Grid, Container, Card, List, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
+import { ThemeProvider, Grid, Container } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import NavBar from '../components/NavBar';
 import _ from 'lodash';
@@ -7,6 +7,7 @@ import SelectCalendar from '../components/SelectCalendar';
 import CalendarHours from '../components/CalendarHours';
 import CalendarColumns from '../components/CalendarColumns';
 import CalendarHeader from '../components/CalendarHeader';
+import CalendarColumnHeaders from '../components/CalendarColumnHeaders';
 
 const calendarClient = require('../calendarClient');
 var moment = require('moment');
@@ -29,20 +30,6 @@ const theme = createMuiTheme({
         },
       }
     },
-    MuiListItemIcon: {
-      root: {
-        minWidth: 'auto'
-      }
-    },
-    MuiCard: {
-      root: {
-        background: '#ffffff'
-      }
-    },
-    MuiTypography: {
-      root: {
-      }
-    }
   }
 });
 
@@ -75,7 +62,6 @@ class Calendar extends Component {
       this.setState({
         roommates: _.merge(this.state.roommates, res)
       });
-      console.log(this.state.roommates);
     });
   }
 
@@ -97,16 +83,6 @@ class Calendar extends Component {
     });
   }
 
-  generateCalendarColumnHeader(name) {
-    return (
-      <Grid item xs>
-        <Typography variant='h5'>
-          {name}
-        </Typography>
-      </Grid>
-    );
-  }
-
   render() {
     return (
       <ThemeProvider theme={theme}>
@@ -122,9 +98,7 @@ class Calendar extends Component {
                 <Grid container item xs={12} spacing={0}>
                   <Grid container item xs={12} spacing={1}>
                     <Grid item xs={1} />
-                    {this.state.selectedCalendar === 0 ? 
-                      _.map(this.state.roommates, (roommate) => this.generateCalendarColumnHeader(roommate.name))
-                      : this.generateCalendarColumnHeader(this.state.roommates[this.state.selectedCalendar - 1].name)}
+                    <CalendarColumnHeaders roommates={this.state.roommates} selectedCalendar={this.state.selectedCalendar} />
                   </Grid>
                   <Grid container item xs={1}>
                     <CalendarHours />

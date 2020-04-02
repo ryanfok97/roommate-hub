@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ThemeProvider, Grid, Typography, Card } from '@material-ui/core';
+import { ThemeProvider, Grid, Card } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import _ from 'lodash';
 import CalendarColumn from './CalendarColumn';
@@ -19,13 +19,9 @@ const theme = createMuiTheme({
 });
 
 class CalendarColumns extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   generateCalendarColumn(i) {
     return (
-      <Grid container item xs>
+      <Grid container item xs key={i}>
         <Card className='calendarColumn'>
           <CalendarColumn events={_.filter(this.props.roommates[i].events, (event) => {
             if (!event.start.dateTime || !event.end.dateTime) {
@@ -36,9 +32,6 @@ class CalendarColumns extends Component {
 
               let start = moment(event.start.dateTime);
               let end = moment(event.end.dateTime);
-
-              console.log(start)
-              console.log(start.isBetween(min, max))
 
               return start.isBetween(min, max) || end.isBetween(min, max);
             }

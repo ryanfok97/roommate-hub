@@ -16,16 +16,13 @@ const theme = createMuiTheme({
 })
 
 class SelectCalendar extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   generateCalendarSelectButton(text, i) {
     return (
       <ListItem
         button
         selected={this.props.selectedCalendar === i}
         onClick={() => this.props.onCalendarSelect(i)}
+        key={i}
       >
         <ListItemText primary={text} />
         <ListItemIcon>

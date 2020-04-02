@@ -14,9 +14,9 @@ const theme = createMuiTheme({
 });
 
 class CalendarHours extends Component {
-  generateCalendarHours(hour) {
+  generateCalendarHours(hour, i) {
     return (
-      <Grid item xs={12}>
+      <Grid item xs={12} key={i}>
         <Typography>
           {hour % 12 + 1}:00
         </Typography>
@@ -32,7 +32,7 @@ class CalendarHours extends Component {
             ALL DAY
           </Typography>
         </Grid>
-        {_.map(_.range(7, 22, 1), (hour) => this.generateCalendarHours(hour))}
+        {_.map(_.range(7, 22, 1), (hour, i) => this.generateCalendarHours(hour, i))}
       </ThemeProvider>
     );
   }
