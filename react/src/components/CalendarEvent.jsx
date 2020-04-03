@@ -13,10 +13,10 @@ const theme = createMuiTheme({
     },
     MuiTypography: {
       root: {
-        paddingLeft: '5%',
-        paddingRight: '5%',
+        paddingLeft: 16,
+        paddingRight: 16,
         '&.eventSummary': {
-          paddingTop: '5%',
+          paddingTop: 16,
         }
       }
     }
