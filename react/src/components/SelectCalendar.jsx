@@ -10,6 +10,11 @@ const theme = createMuiTheme({
       container: {
         alignContent: 'baseline'
       }
+    },
+    MuiListItemIcon: {
+      root: {
+        justifyContent: 'flex-end'
+      }
     }
   }
 

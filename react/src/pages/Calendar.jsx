@@ -46,6 +46,22 @@ class Calendar extends Component {
         {
           name: 'kadison',
           email: 'ktsh99@uw.edu'
+        },
+        {
+          name: 'toni',
+          email: ''
+        },
+        {
+          name: 'sara',
+          email: ''
+        },
+        {
+          name: 'ryan',
+          email: ''
+        },
+        {
+          name: 'alfred',
+          email: ''
         }
       ],
       selectedCalendar: 0,
@@ -95,8 +111,8 @@ class Calendar extends Component {
                 <Grid container item xs={12} id='calendarHeaderContainer'>
                   <CalendarHeader date={this.state.date} onBackClick={this.onBackClick} onForwardClick={this.onForwardClick} />
                 </Grid>
-                <Grid container item xs={12} spacing={0}>
-                  <Grid container item xs={12} spacing={1}>
+                <Grid container item xs={12} spacing={1}>
+                  <Grid container item xs={12}>
                     <Grid item xs={1} />
                     <CalendarColumnHeaders roommates={this.state.roommates} selectedCalendar={this.state.selectedCalendar} />
                   </Grid>

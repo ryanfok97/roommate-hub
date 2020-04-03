@@ -6,10 +6,19 @@ const theme = createMuiTheme({
   overrides: {
     MuiCard: {
       root: {
-        backgroundColor: '#0fa3b1', // 2.5 vh per 30 minutes
+        backgroundColor: '#0fa3b1', // 1.25 vh per 15 minutes
         position: 'relative',
         overflow: 'hidden'
       },
+    },
+    MuiTypography: {
+      root: {
+        paddingLeft: '5%',
+        paddingRight: '5%',
+        '&.eventSummary': {
+          paddingTop: '5%',
+        }
+      }
     }
   }
 });
@@ -33,7 +42,7 @@ class CalendarEvent extends Component {
             left: '5%' 
           }}
         >
-          <Typography>
+          <Typography className='eventSummary'>
             {this.props.event.summary}
           </Typography>
           <Typography>

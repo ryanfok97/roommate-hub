@@ -14,6 +14,11 @@ const theme = createMuiTheme({
           width: '100%'
         }
       }
+    },
+    MuiGrid: {
+      container: {
+        marginLeft: '5%'
+      }
     }
   }
 });
