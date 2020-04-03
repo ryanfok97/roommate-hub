@@ -5,7 +5,8 @@ const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 const KEYS = './credentials/calendar-api-credentials.json';
 const CALENDARS = [
   'fokb@uw.edu',
-  'ktsh99@uw.edu'
+  'ktsh99@uw.edu',
+  'saralyns@uw.edu'
 ];
 
 const client = new google.auth.JWT(

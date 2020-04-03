@@ -53,7 +53,7 @@ class Calendar extends Component {
         },
         {
           name: 'sara',
-          email: ''
+          email: 'saralyns@uw.edu'
         },
         {
           name: 'ryan',
@@ -75,8 +75,12 @@ class Calendar extends Component {
 
   componentDidMount() {
     calendarClient.listEvents((res) => {
+      let newRoommates = [...this.state.roommates];
+      _.map(newRoommates, (roommate) => {
+        _.merge(roommate, _.find(res, (calendar) => calendar.email === roommate.email))
+      });
       this.setState({
-        roommates: _.merge(this.state.roommates, res)
+        roommates: newRoommates
       });
     });
   }
